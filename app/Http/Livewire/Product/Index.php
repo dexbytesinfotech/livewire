@@ -127,7 +127,7 @@ class Index extends Component
     public function render()
     {
         return view('livewire.product.index',[
-            'products' => Product::with(['productCategories', 'Productstore'])->searchMultipleProduct(trim(strtolower($this->search)), $this->filter)->orderBy($this->sortField, $this->sortDirection)->paginate($this->perPage)
+            'products' => Product::with(['productCategories', 'Productstore', 'image'])->searchMultipleProduct(trim(strtolower($this->search)), $this->filter)->orderBy($this->sortField, $this->sortDirection)->paginate($this->perPage)
         ]);
     }
             

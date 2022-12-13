@@ -173,7 +173,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         //settings
         App\Providers\SettingServiceProvider::class,
-
+        Barryvdh\Debugbar\ServiceProvider::class,
     ],
 
     /*
@@ -229,6 +229,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Utils' => App\Models\Utils::class,
+        'Debugbar' => Barryvdh\Debugbar\Facades\Debugbar::class,
     ],
 
 ];
