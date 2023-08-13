@@ -1,0 +1,208 @@
+[
+  {
+    "sectionTitle" : "DASHBOARD",
+    "type": "collapse",
+    "name": "Dashboard",
+    "key": "",
+    "icon": "dashboard",
+    "route": "dashboard",
+    "href": "",
+    "permission": "dashboard",
+    "noCollapse": false,
+    "module": "Dashboard"
+  },
+  
+  {
+      "sectionTitle" : "USERS MANAGEMENT",
+      "type": "collapse",
+      "name": "Users",
+      "key": "",
+      "icon": "groups",
+      "route": "user-management",
+      "href": "",
+      "permission": "user-management",
+      "noCollapse": false,
+      "module": "Users"
+    },
+    {
+    
+      "type": "collapse",
+      "name": "Agencies",
+      "key": "",
+      "icon": "supervisor_account",
+      "route": "agency-management",
+      "href": "",
+      "permission": "agency-management",
+      "noCollapse": false,
+      "module": "Agencies"
+    },
+    {
+      "sectionTitle" : "DEVICE MANAGEMENT",
+      "type": "collapse",
+      "name": "Devices",
+      "key": "",
+      "icon": "tv_with_assistant",
+      "route": "device-management",
+      "href": "",
+      "permission": "device-management",
+      "noCollapse": false,
+      "module": "Devices"
+    },
+    {
+      "sectionTitle" : "STORE MANAGEMENT",
+      "type": "collapse",
+      "name": "Stores",
+      "key": "",
+      "icon": "store",
+      "route": "store-management",
+      "href": "",
+      "permission": "store-management",
+      "noCollapse": false,
+      "module": "Users",
+      "collapse" : [
+        {
+          "name" : "All Stores",
+          "icon" : "store",
+          "key" : "store-management",
+          "permission" : "store-management",
+          "href" : "",
+          "route" : "store-management"
+        },
+        {
+          "name" : "Unverified Stores",
+          "icon" : "unpublished",
+          "key" : "unverified-stores",
+          "permission" : "unverified-stores",
+          "href" : "",
+          "route" : "unverified-stores",
+          "routeKeys" : {
+            "application_status" : "waiting"
+          }
+        },
+        {
+          "name" : "Store Type",
+          "icon" : "local_convenience_store",
+          "key" : "store-type-management",
+          "permission" : "store-type-management",
+          "href" : "",
+          "route" : "store-type-management"
+        }
+      ]
+    },
+    {
+      "sectionTitle" : "Ticket Support",
+      "type": "collapse",
+      "head": "",
+      "name": "Tickets",
+      "key": "ticket",
+      "icon": "contact_support",
+      "route": "ticket-management",
+      "href": "",
+      "permission": "ticket-management",
+      "noCollapse": false
+    },
+    {
+      "sectionTitle" : "SETTINGS",
+      "type": "collapse",
+      "head": "",
+      "name": "Settings",
+      "key": "setting",
+      "icon": "display_settings",
+      "route": "",
+      "href": "",
+      "permission": "provider-manage-store",
+      "noCollapse": false,
+      "collapse" : [
+        {
+          "name" : "Sliders",
+          "icon" : "tune",
+          "key"  : "slider-management",
+          "route" : "slider-management",
+          "href" : "",
+          "permission" : "slider-management"
+        },
+       {
+          "name" : "Faq",
+          "icon" : "quiz",
+          "key"  : "faq-management",
+          "route" : "faq-management",
+          "href" : "",
+          "permission" : "faq-management"
+        },
+        {
+          "name" : "Pages",
+          "icon" : "pages",
+          "key"  : "page-management",
+          "route" : "page-management",
+          "href" : "",
+          "permission" : "page-management"
+        }
+      ]
+    },
+    {
+      "type": "collapse",
+      "head": "",
+      "name": "Administration",
+      "key": "administration",
+      "icon": "admin_panel_settings",
+      "route": "",
+      "href": "",
+      "permission": "",
+      "noCollapse": false,
+      "collapse" : [
+        {
+          "name" : "General Settings",
+          "icon" : "display_settings",
+          "key"  : "site-settings",
+          "route" : "site-settings",
+          "href" : "",
+          "permission" : "site-settings"
+        },
+        {
+          "name" : "Cache management",
+          "icon" : "cached",
+          "key"  : "cache-management",
+          "route" : "site-cache",
+          "href" : "",
+          "permission" : "site-cache"
+        }
+      ]
+    },
+    {
+      "type": "collapse",
+      "head": "",
+      "name": "Location",
+      "key": "administration",
+      "icon": "public",
+      "route": "",
+      "href": "",
+      "permission": "",
+      "noCollapse": false,
+      "collapse" : [
+        {
+          "name" : "Country",
+          "icon" : "home_pin",
+          "key"  : "country-management",
+          "route" : "country-management",
+          "href" : "",
+          "permission" : "country-management"
+        },
+        {
+          "name" : "State",
+          "icon" : "flag",
+          "key"  : "state-management",
+          "route" : "state-management",
+          "href" : "",
+          "permission" : "state-management"
+        },
+        {
+          "name" : "City",
+          "icon" : "pin_drop",
+          "key"  : "city-management",
+          "route" : "city-management",
+          "href" : "",
+          "permission" : "city-management"
+        }
+      ]
+    }
+  ]

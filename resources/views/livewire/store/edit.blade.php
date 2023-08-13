@@ -1,8 +1,9 @@
+@section('page_title')
+    Store Details
+@endsection
 <div class="container-fluid my-3 py-3">
- 
-    
     <div class="row mb-5">
- 
+    
         @if(env('GOOGLE_MAP_KEY') == '')
             <div class="col-lg-10 col-10 mx-auto position-relative">
                 <div class="row mb-5 text-center">
@@ -32,12 +33,6 @@
                         <a class="nav-link text-dark d-flex" data-scroll="" href="#commission-info">
                             <i class="material-icons text-lg me-2">payments</i>
                             <span class="text-sm">Commission Settings</span>
-                        </a>
-                    </li>
-                    <li class="nav-item pt-2">
-                        <a class="nav-link text-dark d-flex" data-scroll="" href="#preparing-time">
-                            <i class="material-icons text-lg me-2">hourglass_top</i>
-                            <span class="text-sm">Meal Preparing Time</span>
                         </a>
                     </li>
 
@@ -81,7 +76,7 @@
 
             <!-- Card Profile -->
             <div class="card card-body" id="profile">
-                <div class="row justify-content-center align-items-center">
+                <div class="row align-items-center">
                     @error('logo_path')
                     <p class='text-danger'>{{ $message }} </p>
                     @enderror
@@ -89,51 +84,41 @@
                           
                             <div class="avatar avatar-xl position-relative preview">
                                 @if($logo_path)
-                               
                                 <img src="{{ $logo_path->temporaryUrl() }}" class="w-100 rounded-circle shadow-sm"
                                     alt="Profile Photo">
                                 @elseif ($store->logo_path)
-                              
                                 <img src="{{ Storage::disk(config('app_settings.filesystem_disk.value'))->url($store->logo_path)}}" alt="avatar"
                                     class="w-100 rounded-circle shadow-sm">
                                 @else
                                 <img src="{{ asset('assets') }}/img/default-avatar.png" alt="avatar"
                                     class="w-100 rounded-circle shadow-sm">
                                 @endif
-                                <label for="file-input"
+ 
+                                <label for="file-input" 
                                     class="btn btn-sm btn-icon-only bg-gradient-light position-absolute bottom-0 end-0 mb-n2 me-n2">
-                                    <i class="fa fa-pen top-0" data-bs-toggle="tooltip" data-bs-placement="top" title=""
+                                    <i wire:loading.remove class="fa fa-pen top-0" data-bs-toggle="tooltip" data-bs-placement="top" title=""
                                         aria-hidden="true" data-bs-original-title="Edit Image"
-                                        aria-label="Edit Image"></i><span class="sr-only">Edit Image</span>
-                                </label>
-                                <input wire:model='logo_path' type="file" id="file-input">
-                                @error('logo_path')
-                                    <p class='text-danger inputerror'>{{ $message }} </p>
-                                @enderror
+                                        aria-label="Edit Image"></i>
+                                        <span class="sr-only">Edit Image</span>
+
+                                    <div wire:loading wire:target="logo_path">
+                                        <x-spinner></x-spinner>
+                                    </div>
+
+                               </label>
+
+                               <input wire:model='logo_path' wire:loading.attr="disabled" type="file" id="file-input">
                             </div>
                     </div>
-                    <div class="col-sm-auto col-8 my-auto">
+
+                    <div class="col-sm-8">
                         <div class="h-100">
                             <h5 class="mb-1 font-weight-bolder">
-                                {{-- @dd($store) --}}
-                                {{ $store->name }} <span class="fa-sm material-symbols-outlined text-warning">
-                                    star
-                                    </span>{{$store->order_rating_avg_rating }}   ({{ $store->order_rating_count }})
+                                {{ $store->name }} 
                             </h5>
                             <p class="mb-0 font-weight-normal text-sm">
                                 + {{ $store->phone }}
                             </p>
-                        </div>
-                    </div>
-                    <div class="col-sm-auto ms-sm-auto mt-sm-0 mt-3 d-flex">
-                        <label class="form-check-label mb-0">
-                            <small id="profileVisibility">
-                                Active
-                            </small>
-                        </label>
-                        <div class="form-check form-switch ms-2 my-auto">
-                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault35"  wire:change="statusUpdate({{ $store->id }},{{ $store->status}})"
-                                    @if($store->status) checked="" @endif>
                         </div>
                     </div>
                 </div>
@@ -171,36 +156,28 @@
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
                         </div>
-                        <div class="col-3 mb-4">
+                        <div class="col-6 mb-4">
                             <div class="input-group input-group-static">
                                 <label>Store Type *</label>
-                                <select class="form-control input-group input-group-dynamic" wire:model.lazy="store.restaurant_type"  id="projectName" onfocus="focused(this)" onfocusout="defocused(this)">
+                                <select class="form-control input-group input-group-dynamic" wire:model.lazy="store.store_type"  id="projectName" onfocus="focused(this)" onfocusout="defocused(this)">
                                     <option value=''>Choose Your Store Type</option>
                                     @foreach ($store_type as $value)
                                     <option value="{{ $value['name'] }}">{{ $value['name']}}</option>
                                     @endforeach
                                  </select>
                             </div>
-                            @error('store.restaurant_type')
+                            @error('store.store_type')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
                         </div>
-                        
-                        <div class="col-3 mb-4">
-                            <div class="input-group input-group-static">
-                                <label>Number Of Branch *</label>
-                                <input wire:model.lazy="store.number_of_branch" type="text" class="form-control" placeholder="Enter a Number Of Branch e.g 1, 2, 3 etc..">
-                            </div>
-                            @error('store.number_of_branch')
-                            <p class='text-danger inputerror'>{{ $message }} </p>
-                            @enderror
-                        </div>  
-
+                    </div>
+                       
+                      <div class="row">
                         <div class="col-2  mb-4">
                             <div class="input-group input-group-static">
                                 <label>Country Code *</label>
                                 <select class="form-control input-group input-group-dynamic" wire:model.lazy="store.country_code" id="countryCode" onfocus="focused(this)" onfocusout="defocused(this)">
-                                    <option value = '' selected>Select</option>
+                                   <option value = '' selected>Select</option>
                                         @foreach ($countries  as $countryValue)
                                             <option value="{{ $countryValue['country_code'] }}">{{ $countryValue['country_code']}}</option>
                                         @endforeach
@@ -229,8 +206,10 @@
                             @error('store.email')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
-                        </div>                       
-
+                        </div> 
+                      </div> 
+                                           
+                    <div class="row">
                         <div class="col-12 mb-4">
                             <div class="input-group input-group-static">
                                 <label>Description *</label>
@@ -267,7 +246,7 @@
                     <div class="col-12  mb-4">
                     
                         <div class="form-check">
-                            <input wire:model.lazy="is_global_commission" class="form-check-input" type="checkbox"  id="is_global_commission">
+                            <input  wire:loading.attr="disabled"  wire:model.lazy="is_global_commission" class="form-check-input" type="checkbox"  id="is_global_commission">
                             <label class="form-check-label" for="is_global_commission">
                                 Enable Global Commission
                             </label>
@@ -290,25 +269,6 @@
             </div>
         </div> 
 
-       <!-- Food Order Preparing Time -->
-       <div class="card mt-4" id="preparing-time">
-            <div class="card-header">
-                <h5>Order Preparing Time</h5>
-            </div>
-            <div class="card-body pt-0">                
-                <div class="row">
-                    <div class="col-12 mb-4">
-                        <div class="input-group input-group-static">
-                            <label>Order Preparing Time (In Min) *</label>
-                            <input wire:model.lazy="store.order_preparing_time" type="text" class="form-control" placeholder="Enter Order Preparing Time e.g 15, 20, 30 etc..">
-                        </div>
-                        @error('store.order_preparing_time')
-                            <p class='text-danger inputerror'>{{ $message }} </p>
-                        @enderror
-                    </div>                    
-                </div>
-            </div>
-        </div> 
 
 
          <!-- Card Address Info -->
@@ -356,8 +316,9 @@
                         <div class="col-4  mb-4">
                             <div class="input-group input-group-static">
                                 <label >Country *</label>
-                                <select class="form-control input-group input-group-dynamic" wire:model.lazy="storeAddress.country"  wire:change="$emit('updatedCountry')" id="countryName" onfocus="focused(this)" onfocusout="defocused(this)">
-                                    <option>Select Country</option> 
+                                <select class="form-control input-group input-group-dynamic"  wire:model.lazy="storeAddress.country"  wire:change="$emit('updatedCountry')" id="countryName" onfocus="focused(this)" onfocusout="defocused(this)">
+                                    <option value = '' selected>Select</option>
+
                                     @foreach ($countries  as $countryValue)
                                         <option value="{{ $countryValue['id'] }},{{ $countryValue['name'] }}">{{ $countryValue['name']}}</option>
                                     @endforeach
@@ -371,7 +332,7 @@
                         <div class="col-4  mb-4">
                             <div class="input-group input-group-static">
                                 <label>State *</label>
-                                <select class="form-control input-group input-group-dynamic" wire:model.lazy="storeAddress.state" wire:change="$emit('updatedState')"  id="stateName" onfocus="focused(this)" onfocusout="defocused(this)">
+                                <select class="form-control input-group input-group-dynamic" wire:loading.attr="disabled"  wire:model.lazy="storeAddress.state" wire:change="$emit('updatedState')"  id="stateName" onfocus="focused(this)" onfocusout="defocused(this)">
                                     <option>Select State</option>  
                                     @foreach ($states  as $stateValue)
                                         <option value="{{ $stateValue['id'] }},{{ $stateValue['name'] }}">{{ $stateValue['name']}}</option>
@@ -386,7 +347,7 @@
                         <div class="col-4  mb-4">
                             <div class="input-group input-group-static">
                                 <label>City *</label>
-                                <select class="form-control input-group input-group-dynamic" wire:model.lazy="storeAddress.city" id="cityName">
+                                <select class="form-control input-group input-group-dynamic"  wire:loading.attr="disabled"  wire:model.lazy="storeAddress.city" id="cityName">
                                     <option>Select City</option>  
                                     @foreach ($cities as $cityValue)
                                         <option value="{{ $cityValue['name'] }}">{{ $cityValue['name']}}</option>
@@ -404,8 +365,10 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="d-flex justify-content-end mt-4">
-                    <button type="submit" name="submit" class="btn bg-gradient-dark m-0 ms-2">Update
-                        </button>
+                    <button  type="submit" name="submit"  class="btn bg-gradient-dark m-0 ms-2">
+                        <span wire:loading.remove wire:target="update"> Update</span>
+                        <span wire:loading wire:target="update"><x-buttonSpinner></x-buttonSpinner></span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -497,21 +460,21 @@
 
                     <x-slot name="body">
                         @foreach ($bussinessHours as $mainKey => $bussiness)
-                        <x-table.row>
+                        <x-table.row >
                             <x-table.cell>{{ ucfirst($bussiness['days']) }}</x-table.cell>
                             <x-table.cell> 
                                 <div class="form-group">                                    
                                     <div class="form-check">
-                                        <input class="form-check-input" wire:model.lazy="bussinessHours.{{$mainKey}}.status"  type="checkbox">
+                                        <input  wire:click="editBussinessHour({{$mainKey}})" class="form-check-input"  wire:loading.attr="disabled"  wire:model.lazy="bussinessHours.{{$mainKey}}.status"  type="checkbox">
                                      </div>
                                 </div>
                             </x-table.cell>  
                             <x-table.cell class="text-center">
                                 <div class="input-group input-group-static mb-1 text-center"> 
-                                    <select  wire:model.lazy="bussinessHours.{{$mainKey}}.opening_time"  class="form-control" id="OpeningTime">
-                                    @foreach ($timeOptionsList as $openingKey => $openingTime)
-                                        <option value="{{$openingKey}}" class="text-center">{{$openingTime}}</option>
-                                    @endforeach
+                                    <select wire:change="changeOpeningTime({{$mainKey}},$event.target.value)" wire:model.lazy="bussinessHours.{{$mainKey}}.opening_time"  class="form-control" id="OpeningTime">
+                                      @foreach ($timeOptionsList as $openingKey => $openingTime)
+                                        <option  value="{{$openingKey}}" class="text-center">{{$openingTime}}</option>
+                                      @endforeach
                                     </select>
                                     @error('bussinessHours.'.$mainKey.'.opening_time')
                                         <p  class='text-danger inputerror'>{{ $message }} </p>
@@ -520,7 +483,7 @@
                             </x-table.cell>
                             <x-table.cell> 
                                 <div class="input-group input-group-static mb-1 text-center"> 
-                                    <select  wire:model.lazy="bussinessHours.{{$mainKey}}.closing_time"   class="form-control" id="OpeningTime">
+                                    <select wire:change="changeClosingTime({{$mainKey}},$event.target.value)" wire:model.lazy="bussinessHours.{{$mainKey}}.closing_time"   class="form-control" id="OpeningTime">
                                         @foreach ($timeOptionsList as $closingKey => $closingTime)
                                             <option value="{{$closingKey}}" class="text-center" >{{$closingTime}}</option>
                                         @endforeach
@@ -548,7 +511,7 @@
                                 be certain.</p>
                         </div>
                         <div class="w-50 text-end">
-                            <button class="btn bg-gradient-danger mb-0 ms-2" type="button" name="button" wire:click="destroyConfirm({{ $store->id }})">Delete
+                            <button  wire:loading.attr="disabled"  class="btn bg-gradient-danger mb-0 ms-2" type="button" name="button" wire:click="destroyConfirm({{ $store->id }})">Delete
                                 Account</button>
                         </div>
                     </div>
@@ -564,7 +527,7 @@
                             <p class="text-sm mb-0">Once you suspended this account, It means that the store has remove temporarily.</p>
                         </div>
                         <div class="w-50 text-end">
-                            <button class="btn bg-gradient-{{ $store->application_status == 'suspended' ? 'success' : 'warning' }} mb-0 ms-2" type="button" name="button" wire:click="suspendedConfirm({{ $store }})">{{ $store->application_status == 'suspended' ? 'Re-Active Account' : 'Account suspended' }}</button>
+                            <button  wire:loading.attr="disabled"  class="btn bg-gradient-{{ $store->application_status == 'suspended' ? 'success' : 'warning' }} mb-0 ms-2" type="button" name="button" wire:click="suspendedConfirm({{ $store }})">{{ $store->application_status == 'suspended' ? 'Re-Active Account' : 'Account suspended' }}</button>
                         </div>
                     </div>
                 </div>
@@ -573,70 +536,76 @@
         </div>
         
         <!-- Modal -->
-<div wire:ignore.self class="modal fade" id="addModalProvider" tabindex="-1" role="dialog" aria-labelledby="exampleModalSignTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-m" role="document">
-    <div  class="modal-content">
-        <div class="modal-body p-0">
-        <div class="card card-plain">
-            <div class="card-header pb-0 text-left">
-                <h5 class="">Add provider</h5>
-                <p class="mb-0">Find a providers are not associated with stores.</p>
-            </div>
-            <div class="card-body pb-3">     
 
-                <div class="input-group input-group-outline my-3">
+<div wire:ignore.self class="modal fade" id="addModalProvider" tabindex="-1" role="dialog" aria-labelledby="exampleModalSignTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-m modal-dialog-scrollable " role="document">
+        
+    <div  class="modal-content">
+        <div class="card-header pb-0 text-left">
+            <h5 class="">Add provider</h5>
+            <p class="mb-0">Find a providers are not associated with stores.</p>
+        </div>
+        <div class="modal-body p-0">
+        <div class="card card-plain">            
+            <div class="card-body pb-3">    
+
+                <div class="input-group input-group-outline my-3 focused is-focused">
                     <label class="form-label">Search Provider</label>
                     <input type="text" wire:model="search"  id ="search" placeholder="Search by Name, Mobile Number"  class="form-control">
                 </div>  
+ 
                 @if($search != '')
-                    @foreach ($searchResultProviders as $spKey => $searchProviders) 
-                        <div class="list-group searchResult">
-                            <a href="javascript:void(0)" data-id="{{ $searchProviders->id }}" class="list-group-item list-group-item-action searchProviders">{{$searchProviders->name}}</a>
-                        </div>
-                    @endforeach
-                                        
+                  @if(!empty($searchResultProviders))
+                        @foreach ($searchResultProviders as $spKey => $searchProviders) 
+                            <ul class="list-group list-group-flush list my--3">
+                                <li style="cursor: pointer;" class="list-group-item px-0 border-0" wire:click="selectedUser({{ $searchProviders->id }})">
+                                    <div class="row align-items-center searchResult">
+                                        <div class="col-auto">                                            
+                                            @if($selected_user_id == $searchProviders->id)
+                                                <span class="material-symbols-outlined text-success">
+                                                    check_circle
+                                                </span>
+                                            @else
+                                                <span class="material-symbols-outlined">
+                                                    radio_button_unchecked
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <div class="col">
+                                            <h6 class="text-sm font-weight-normal mb-0 searchProviders">{{ $searchProviders->name }}</h6>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        @endforeach
+                  @endif
                     @if($searchResultProviders->count() == 0)
                         <p class="text-sm text-center">
                             No record matched!
                         </p>
                     @endif
-
                 @endif              
-          
-                   
-                <div class="text-center">
-                    <button type="button" class="btn bg-gradient-dark btn-lg btn-rounded w-50 mt-4 mb-0 submit d-sm-none" id="submitProvider" wire:click="$emit('providerSubmit')">Submit</button>
-                </div>
-              
-            </div>           
+             </div>
+           </div>
         </div>
+        <div class="modal-footer">
+            <button type="button"  wire:loading.attr="disabled"  wire:click.prevent="resetField()" class="btn btn-light " data-bs-dismiss="modal">Close</button>
+            <button type="button"  wire:loading.attr="disabled"  class="btn bg-gradient-dark submit" id="submitProvider" @if(!$selected_user_id) disabled @endif wire:click="$emit('providerSubmit')" >Submit</button>
+        </div>
+    
         </div>
     </div>
     </div>
 </div>
+
     
 </div>
 
 
 
 
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
-<script src="{{ asset('assets') }}/js/plugins/quill.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $(document).on('click', ".searchResult", function(){
-            _this = $(this)
-            let $id = _this.find(".searchProviders").data('id');
-            $(".searchProviders").removeClass('bg-success text-light');
-            _this.find(".searchProviders").addClass('bg-success text-light');
-            $('#submitProvider').attr('wire:click',"$emit('providerSubmit', "+$id+")");
-            $("#submitProvider").removeClass('d-sm-none');
-           
-        });
-       
-    });
-</script>
+@push('js') 
+
 
 <script type="text/javascript">
         $(document).ready(function() {
@@ -644,7 +613,7 @@
                     $('#addModalProvider').modal('hide');
             });
         });
-    </script>
+</script>
  
 @endpush
  

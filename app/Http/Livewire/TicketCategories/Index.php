@@ -23,6 +23,13 @@ class Index extends Component
     protected $queryString = ['sortField', 'sortDirection'];
     protected $paginationTheme = 'bootstrap';
 
+    public bool $loadData = false;
+  
+    public function init()
+    {
+         $this->loadData = true;
+    }
+
     public function sortBy($field){
         if($this->sortField === $field) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
@@ -39,7 +46,7 @@ class Index extends Component
     public function render()
     {
         return view('livewire.ticket-categories.index', [
-            'ticketCategories' => TicketCategory::searchMultipleTicketCategory($this->search)->orderBy($this->sortField, $this->sortDirection)->paginate($this->perPage)
+            'ticketCategories' =>$this->loadData ? TicketCategory::searchMultipleTicketCategory($this->search)->orderBy($this->sortField, $this->sortDirection)->paginate($this->perPage) : [],
         ]);
     }
      
@@ -51,14 +58,21 @@ class Index extends Component
     public function remove()
     {
         TicketCategory::find($this->deleteId)->delete();
-        
-        $this->dispatchBrowserEvent('swal:modal', [
-                'type' => 'success',  
-                'message' => 'Ticket Category Delete Successfully!', 
-                'text' => 'It will not list on ticket category table soon.'
-            ]);
+      
+        $this->dispatchBrowserEvent('alert', 
+            ['type' => 'success',  'message' => __('TicketCategories.Ticket Category Delete Successfully!')]);
     } 
 
+
+    public function updatingSearch()
+    {
+        $this->gotoPage(1);
+    }
+
+    public function updatingPerPage()
+    {
+        $this->resetPage();
+    }   
      /**
      * Write code on Method
      *
@@ -70,10 +84,10 @@ class Index extends Component
         $this->dispatchBrowserEvent('swal:confirm', [
                 'action' => 'remove',
                 'type' => 'warning',  
-                'confirmButtonText' => 'Yes, delete it!',
-                'cancelButtonText' => 'No, cancel!',
-                'message' => 'Are you sure?', 
-                'text' => 'If deleted, you will not be able to recover this ticket category data!'
+                'confirmButtonText' => __('TicketCategories.Yes, delete it!'),
+                'cancelButtonText' => __('TicketCategories.No, cancel!'),
+                'message' => __('TicketCategories.Are you sure?'), 
+                'text' => __('TicketCategories.If deleted, you will not be able to recover this ticket category data!')
             ]);
     }
 

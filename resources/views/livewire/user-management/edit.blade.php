@@ -26,10 +26,20 @@
 
                             <div class="col-12 mb-4">
                                 <div class="input-group input-group-static">
-                                    <label>Full Name *</label>
-                                    <input wire:model.lazy="user.name" type="text" class="form-control" placeholder="Enter a full name">
+                                    <label>First Name *</label>
+                                    <input wire:model.lazy="user.first_name" type="text" class="form-control" placeholder="Enter a first name">
                                 </div>
-                                @error('user.name')
+                                @error('user.first_name')
+                                <p class='text-danger inputerror'>{{ $message }} </p>
+                                @enderror
+                            </div>
+
+                            <div class="col-12 mb-4">
+                                <div class="input-group input-group-static">
+                                    <label>Last Name *</label>
+                                    <input wire:model.lazy="user.last_name" type="text" class="form-control" placeholder="Enter a last name">
+                                </div>
+                                @error('user.last_name')
                                 <p class='text-danger inputerror'>{{ $message }} </p>
                                 @enderror
                             </div>
@@ -59,8 +69,8 @@
 
                             <div class="col-12 mb-4">
                                 <div class="input-group input-group-static">
-                                    <label>Email *</label>
-                                    <input wire:model.lazy="user.email" type="email" class="form-control" placeholder="Enter a Email">
+                                    <label>Email </label>
+                                    <input wire:model.lazy="user.email" type="email" class="form-control" placeholder="Enter an Email">
                                 </div>
                                 @error('user.email')
                                 <p class='text-danger inputerror'>{{ $message }} </p>
@@ -91,8 +101,10 @@
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-end mt-4">
                                     <a  href="{{ route('user-management') }}" class="btn btn-light m-0">Cancel</a>
-                                    <button type="submit" name="submit" class="btn bg-gradient-dark m-0 ms-2">Update
-                                        User</button>
+                                    <button type="submit" wire:loading.attr="disabled" name="submit" class="btn bg-gradient-dark m-0 ms-2">
+                                        <span wire:loading.remove wire:target="update"> Update User</span>
+                                        <span wire:loading wire:target="update"><x-buttonSpinner></x-buttonSpinner></span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -102,7 +114,4 @@
         </div>
     </div>
 </div>
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
-<script src="{{ asset('assets') }}/js/plugins/quill.min.js"></script>
-@endpush
+

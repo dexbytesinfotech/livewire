@@ -18,12 +18,18 @@ class Index extends Component
     public $sortField = 'name';
     public $sortDirection = 'asc';
     public $perPage = 10;
-    protected $defaultRoles = ['Admin', 'Provider', 'Driver', 'Customer', 'Unverified'];
+    protected $defaultRoles = ['Admin', 'Provider', 'Customer', 'Unverified'];
     public $deleteId = '';
     
     protected $listeners = ['remove'];
     protected $queryString = ['sortField', 'sortDirection',];
     protected $paginationTheme = 'bootstrap';
+    public bool $loadData = false;
+  
+    public function init()
+    {
+         $this->loadData = true;
+    }
 
     public function sortBy($field){
         if($this->sortField === $field) {
@@ -46,10 +52,10 @@ class Index extends Component
         $this->dispatchBrowserEvent('swal:confirm', [
                 'action' => 'remove',
                 'type' => 'warning',  
-                'confirmButtonText' => 'Yes, delete it!',
-                'cancelButtonText' => 'No, cancel!',
-                'message' => 'Are you sure?', 
-                'text' => 'If deleted, you will not be able to recover this store data!'
+                'confirmButtonText' => __('role.Yes, delete it!'),
+                'cancelButtonText' => __('role.No, cancel!'),
+                'message' => __('role.Are you sure?'), 
+                'text' => __('role.If deleted, you will not be able to recover this store data!')
             ]);
     }
 
@@ -61,18 +67,25 @@ class Index extends Component
     public function remove()
     {
         Role::find($this->deleteId)->delete();
-
-        $this->dispatchBrowserEvent('swal:modal', [
-                'type' => 'success',  
-                'message' => 'Role Delete Successfully!', 
-                'text' => 'It will not list on roles table soon.'
-            ]);
+      
+        $this->dispatchBrowserEvent('alert', 
+            ['type' => 'success',  'message' => __('role.Role Delete Successfully!')]);
     }  
+
+    public function updatingSearch()
+    {
+        $this->gotoPage(1);
+    }
+
+    public function updatingPerPage()
+    {
+        $this->resetPage();
+    }   
 
     public function render()
     {
         return view('livewire.roles.index', [
-            'roles' => Role::searchMultipleRole(trim(strtolower($this->search)))->orderBy($this->sortField, $this->sortDirection)->paginate($this->perPage)
+            'roles' => $this->loadData ? Role::searchMultipleRole(trim(strtolower($this->search)))->orderBy($this->sortField, $this->sortDirection)->paginate($this->perPage) : [],
         ]);
     }
 }

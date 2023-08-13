@@ -1,130 +1,121 @@
-<div class="container-fluid py-4">
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
-                <!-- Card header -->
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col-6">
-                            <h5 class="mb-0">Cities</h5>
-                        </div>
-                        <div class="col-6 text-end">
-                            @can('add-city')
-                                <a class="btn bg-gradient-dark mb-0 me-4" href="{{ route('add-city') }}"><i
-                                        class="material-icons text-sm">add</i>&nbsp;&nbsp;Add City</a>
-                            @endcan
-                        </div>
-                    </div>
-                </div>
-                @if (Session::has('status'))
-                <div class="alert alert-success alert-dismissible text-white mx-4" role="alert">
-                    <span class="text-sm">{{ Session::get('status') }}</span>
-                    <button type="button" class="btn-close text-lg py-3 opacity-10" data-bs-dismiss="alert"
-                        aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                 
-                @elseif (Session::has('error'))
-                <div class="alert alert-danger alert-dismissible text-white mx-4" role="alert">
-                    <span class="text-sm">{{ Session::get('error') }}</span>
-                    <button type="button" class="btn-close text-lg py-3 opacity-10" data-bs-dismiss="alert"
-                        aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                @endif
-                <div class="d-flex flex-row justify-content-between mx-4">
-                    <div class="d-flex mt-3 align-items-center justify-content-center">
-                        <p class="text-secondary pt-2">Show&nbsp;&nbsp;</p>
-                        <select wire:model="perPage" class="form-control mb-2" id="entries">
-                            <option value="10">10</option>
-                            <option selected value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                        <p class="text-secondary pt-2">&nbsp;&nbsp;entries</p>
-                    </div>
-                    <div class="mt-3 ">
-                        <input wire:model="search" type="text" class="form-control" placeholder="Search...">
-                    </div>
-                </div>
-                <x-table>
+{{-- Page Title --}}
+@section('page_title')
+    @lang("components/city.page_title")
+@endsection
 
-                    <x-slot name="head">
-                        <x-table.heading sortable wire:click="sortBy('id')"
-                            :direction="$sortField === 'id' ? $sortDirection : null"> ID
-                        </x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('name')"
-                        :direction="$sortField === 'name' ? $sortDirection : null"> Name
-                        </x-table.heading>  
-                        <x-table.heading sortable wire:click="sortBy('country_id')"
-                            :direction="$sortField === 'country_id' ? $sortDirection : null"> Country Name
-                        </x-table.heading> 
-                        <x-table.heading sortable wire:click="sortBy('state_id')"
-                            :direction="$sortField === 'state_id' ? $sortDirection : null"> State Name
-                        </x-table.heading> 
-                       
-                        <x-table.heading> Status
-                        </x-table.heading>     
-                                        
-                        <x-table.heading sortable wire:click="sortBy('created_at')"
-                            :direction="$sortField === 'created_at' ? $sortDirection : null">
-                            Creation Date
-                        </x-table.heading>
+<x-core.container wire:init="init">
+    <x-loder />
+
+    {{-- Alert message - alert-success, examples- alert-danger, alert-warning, alert-primary  --}}
+    <x-slot name="alert">
+        @if (session('status'))
+            <x-alert class="alert-success">{{ Session::get('status') }}</x-alert>
+        @endif
+    </x-slot>
+
+    {{-- Card --}}
+    <x-core.card class="custom-card">
+        <x-slot name="header">
+
+            {{-- Filter row with seachable --}}
+            <x-table.container-filter-row seachable />
+
+                <x-core.card-toolbar>
+                    {{-- Header Bulk actions  --}}
+                    <x-dropdown label="{{ __('components/city.Actions') }}">
+                        <x-dropdown.item wire:click="exportSelected">
+                            @lang('components/city.Export')
+                        </x-dropdown.item>
+
                         
-                        <x-table.heading>Actions</x-table.heading>
-                         
-                    </x-slot>
+                        <x-dropdown.item wire:click="destroyMultiple()" class="dropdown-item text-danger">
+                            @lang('components/city.Delete')
+                        </x-dropdown.item>
+                    </x-dropdown>
 
-                    <x-slot name="body">
-                        @foreach ($cities as $city)
-                        <x-table.row wire:key="row-{{  $city->id }}">
-                            <x-table.cell>{{  $city->id }}</x-table.cell>
-                            <x-table.cell > {{  $city->name }} </x-table.cell>
-                            <x-table.cell>{{ $city->country->name }}</x-table.cell> 
-                            <x-table.cell>{{ $city->state->name }}</x-table.cell> 
-                            
-                            <x-table.cell> <div class="form-check form-switch ms-3">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault35"  wire:change="statusUpdate({{$city->id }},{{ $city->status}})"
-                                    @if($city->status) checked="" @endif>
-                            </div></x-table.cell>      
-                                               
-                            <x-table.cell>{{  $city->created_at }}</x-table.cell>
-                            <x-table.cell>
-                         
-                                <div class="dropdown dropup dropleft">
-                                    <button class="btn bg-gradient-default" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span class="material-icons">
-                                            more_vert
-                                        </span>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        @can('edit-city')
-                                            <li><a class="dropdown-item"  data-original-title="Edit" title="Edit" href="{{ route('edit-city', $city) }}">Edit</a></li>
-                                        @endcan
-                                        <li><a class="dropdown-item text-danger"  data-original-title="Remove" title="Remove" wire:click="destroyConfirm({{ $city->id }})">Delete</a></li>
-                                        
-                                    </ul>
-                                </div>
-                           
-                            </x-table.cell>
+
+                     {{-- Filter Action  --}}
+                     <x-dropdown class="px-2 py-3 dropdown-md" label="{{ __('component.Filter') }}">
+                        <x-input.group inline for="filters.status" label="{{ __('components/city.Status') }}">
+                            <x-input.select wire:model="filters.status" placeholder="{{ __('components/city.Any Status') }}">
+                                <option value="1"> @lang('components/city.Active') </option>
+                                <option value="0"> @lang('components/city.Inactive') </option>
+                            </x-input.select>
+                        </x-input.group>
+                    
+                        {{-- Date renge filter --}}
+                        <x-table.filter-date-input />
+
+                        <x-button.link wire:click="resetFilters" class="mt-2"> @lang('component.Reset Filters') </x-button.link>
+
+                    </x-dropdown>
+
+                    {{--  Hide & show columns dropdown --}}
+<x-table.view-columns/>
+
+                    @can('add-user')
+                        {{-- button with icon,href --}}
+                        <x-table.button.add icon href="{{ route('add-city') }}"> @lang('components/city.Add City') </x-table.button.add>
+                    @endcan
+
+                </x-core.card-toolbar>
+        </x-slot>
+        <x-slot name="body">
+
+            {{--  Table with perPage and pagination --}}
+            <x-table perPage total="{{ $cities->total() }}" id="users-list" paginate="{{ $cities->links() }}">
+                <x-slot name="head">
+
+                    {{-- Select-all checkbox  --}}
+                    <x-table.heading-selected total="{{ $cities->total() }}" />
+
+                    {{-- Dynamic columns heading --}}
+                    <x-table.heading columns />
+                    <x-table.heading> @lang('components/city.Actions') </x-table.heading>
+
+                </x-slot>
+                <x-slot name="body">
+                    {{-- Select records count (which rows checkbox checked) --}}
+                    <x-table.row-selected-count selectPage="{{ $selectPage }}" selectedAll="{{ $selectAll }}"
+                        count="{{ $cities->count() }}" total="{{ $cities->total() }}" />
+
+                        {{-- Table row --}}
+                        @forelse ($cities as $city)
+                        <x-table.row wire:key="row-{{ $city->id }}">
+
+                            {{-- Select checkbox --}}
+                            <x-table.cell-selected value="{{ $city->id }}" />
+                        
+                            <x-table.cell column="name" href="">{{ $city->name }}</x-table.cell>
+                            <x-table.cell column="country_id" href="">{{ $city->country->name }}</x-table.cell>
+                            <x-table.cell column="state_id" href="">{{ $city->state->name }}</x-table.cell>
+
+                            <x-table.cell-date column="created_at">{{ $city->created_at }}</x-table.cell-date>
+
+                            <x-table.cell-switch column="status" status="{{ $city->status }}"
+                                wire:change="statusUpdate({{ $city->id }},{{ $city->status }})">
+                            </x-table.cell-switch>
+
+                        
+                            {{-- Action , examples- edit, view, delete  --}}
+                            <x-table.cell-dropdown>
+                                @can('edit-city')
+                                <x-table.dropdown-item class="dropdown-item" 
+                                    title="{{ __('components/city.Edit') }}" href="{{ route('edit-city', $city) }}">
+                                    {{ __('components/city.Edit') }}
+                                </x-table.dropdown-item>
+                                @endcan
+                                <x-table.dropdown-item class="dropdown-item text-danger" 
+                                    title="{{ __('components/city.Delete') }}" wire:click="destroyConfirm({{ $city->id }})">
+                                    {{ __('components/city.Delete') }}
+                                </x-table.dropdown-item>
+                            </x-table.cell-dropdown>
                         </x-table.row>
-                        @endforeach
-                    </x-slot>
-                </x-table>
-                <div id="datatable-bottom">
-                    {{  $cities->links() }}
-                </div>
-                @if( $cities->total() == 0)
-                    <div>
-                        <p class="text-center">No records found!</p>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-</div>
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
-@endpush
+                    @empty
+                        <x-table.no-record-found />
+                    @endforelse
+                </x-slot>
+            </x-table>
+        </x-slot>
+    </x-core.card>
+</x-core.container>

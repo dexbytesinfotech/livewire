@@ -35,16 +35,16 @@ class Edit extends Component
     }
 
     public function edit(){
-
+         
         $this->validate();
-
+        
         if($this->state->is_default){
             State::where('is_default', 1)->where('country_id', $this->state->country_id )->update(['is_default' => 0]);
         }
 
         $this->state->update();
 
-        return redirect(route('state-management'))->with('status', 'State successfully updated.');
+        return redirect(route('state-management'))->with('status', __('world.State successfully updated.'));
     }
 
 

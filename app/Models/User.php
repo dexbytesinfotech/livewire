@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Posts\Post;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,34 +11,26 @@ use App\Models\Tickets\Ticket;
 use App\Models\Users\UserMetaData;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Models\Order\Order;
 use App\Models\Stores\StoreOwners;
 use App\Models\Push\PushDevice;
-use App\Models\Driver\UserDriver;
-use App\Models\Messages\UserMessage;
-use App\Constants\OrderDriverStatus;
-use App\Constants\OrderStatus;
-use App\Models\Order\OrderDelivery;
-use App\Models\Push\PushDeliveredMessage;
 use Carbon\Carbon;
 use App\Models\Push\PushMessage;
-use App\Models\OrderReviews\OrderReview;
-use App\Models\Carts\Cart;
-use App\Models\Carts\CartsParticipants;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
-    protected $guard_name = 'web';
+    use  HasFactory, Notifiable, HasRoles;
+    use SoftDeletes;
 
+    protected $guard_name = 'web';
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'phone',
         'password',
@@ -50,6 +41,7 @@ class User extends Authenticatable
         'remember_token',
         'user_name',
         'profile_photo',
+        'is_demo',
         'status'
     ];
 
@@ -70,6 +62,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_demo' => 'boolean',
     ];
 
     /**
@@ -83,6 +76,7 @@ class User extends Authenticatable
         $this->attributes['password'] = bcrypt($value);
     }
 
+    
    /**
      * HasOne relation with Ticket
      *
@@ -91,26 +85,6 @@ class User extends Authenticatable
     public function tickets()
     {
         return $this->hasOne(Ticket::class, 'assigned_to_user_id', 'id');
-    }
-
-     /**
-     * HasOne relation with Messages
-     *
-     * @return BelongsTo
-     */
-    public function senderMessages()
-    {
-        return $this->hasOne(UserMessage::class, 'sender_id', 'id');
-    }
-
-    /**
-     * HasOne relation with Messages
-     *
-     * @return BelongsTo
-     */
-    public function receivermessages()
-    {
-        return $this->hasOne(UserMessage::class, 'receiver_id', 'id');
     }
 
    /**
@@ -202,17 +176,7 @@ class User extends Authenticatable
     }
 
     /**
-     * HasOne relation with Order
-     *
-     * @return BelongsTo
-     */
-    public function order(): HasOne
-    {
-        return $this->hasOne(Order::class);
-    }
-
-    /**
-     * HasOne relation with Order
+     * HasOne relation with store owner
      *
      * @return BelongsTo
      */
@@ -221,115 +185,21 @@ class User extends Authenticatable
         return $this->hasOne(StoreOwners::class, 'user_id', 'id');
     }
 
-     /**
-     * HasOne relation with Order
-     *
-     * @return BelongsTo
-     */
-    public function driver()
-    {
-        return $this->hasOne(UserDriver::class, 'user_id', 'id');
-    }
-    /**
-     * BelongsTo relation with Driver Order
-     *
-     * @return BelongsTo
-     */
-    public function OrderDelivery()
-    {
-        return $this->hasMany(OrderDelivery::class, 'assing_to_id', 'id')->where('delivery_status',OrderDriverStatus::PENDING);
-    }
 
     /**
-     *  getTotalMessageAttribute
+     *  total_notification
      *
      * @return @array
      */
-    public function getTotalMessageAttribute()
-    {
-        return $this->hasMany(UserMessage::class,'receiver_id')->where('is_read', 0)->count();
-    }
-
-    /**
-     *  getTotalNotificationAttribute
-     *
-     * @return @array
-     */
-    public function getTotalNotificationAttribute()
+    public function total_notification($type)
     {
         $query = PushMessage::where('should_visible',true);
-        $query->whereHas('PushDeliveredMessage', function ($query)  {
-            $query->where('is_displayed', 'no')->where('user_id',$this->id);
+        $query->whereHas('PushDeliveredMessage', function ($query) use($type)  {
+            $query->where('is_displayed', 'no')->where('user_id',$this->id)->where('status', 'deliver');
+            $query->whereHas('device', function ($query) use($type) {
+                return $query->where('app_name', '=', $type);
+            });
         });
         return $query->count();
     }
-
-    /**
-     * Get the User Order review
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function OrderRating($type)
-    {
-        return round(OrderReview::where('receiver_id',$this->id)->where('rating_for',$type)->avg('rating'),1);
-    }
-    /**
-     * Get the User Order review count
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function OrderRatingCount($type)
-    {
-        return OrderReview::where('receiver_id',$this->id)->where('rating_for',$type)->count();
-    }
-
-    /**
-     *  DriverOrderCount
-     *
-     * @return @array
-     */
-    public function DriverOrderCount($type)
-    {
-
-        $query = Order::where('order_status',OrderStatus::COMPLETED);
-        $query->whereHas('OrderDriver', function ($query) use ($type) {
-            $query->where('assing_to_id',$this->id);
-                $query->where('delivery_status', OrderDriverStatus::COMPLETED);
-        });
-        switch ($type) {
-            case 'today':
-                $query->whereDate('created_at', Carbon::today());
-                break;
-            case 'week':
-                $query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
-                break;
-            case 'month':
-                $query->whereMonth('created_at', date('m'));
-                break;
-            default:
-            $query->whereDate('created_at', Carbon::today());
-                break;
-        }
-        return $query->count();
-    }
-    /**
-     * Get the cart associated with the User
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function cart(): HasMany
-    {
-        return $this->HasMany(Cart::class);
-    }
-
-    /**
-     * Get all of the JoinCart for the User
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function JoinCart(): HasMany
-    {
-        return $this->hasMany(CartsParticipants::class)->with('cart');
-    }
-
 }

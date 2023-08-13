@@ -1,0 +1,25 @@
+.main_progress 
+{
+ position: fixed;
+ left: 0px;
+ top: 0px;
+ width: 100%;
+ height: 100%;
+ z-index: 9999;
+ background-color: #F2F2F2;
+}
+.main_progress_bar 
+{ 
+  background-color: #819FF7; 
+  width:0%; 
+  height:5px; 
+  border-radius: 3px; 
+}
+.main_progress_percent 
+{ 
+  position:absolute; 
+  display:inline-block; 
+  top:3px; 
+  left:48%; 
+}
+ 

@@ -57,15 +57,15 @@ class Create extends Component
         $this->validate();
 
         $faq = Faq::create([
-            'title'         => $this->title,
-            'descriptions'  => $this->descriptions,
             'status'        => $this->status ? 1:0,
             'faq_category_id'=> 1,
             'role_type'     => $this->role_type,
-        ]);
+            'title'         => $this->title,
+            'descriptions'  => $this->descriptions,
+    ]);
 
  
-        return redirect(route('faq-management'))->with('status','Faq successfully created.');
+        return redirect(route('faq-management'))->with('status',__('faq.Faq successfully created'));
     }
 
 }

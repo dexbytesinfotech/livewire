@@ -15,7 +15,7 @@ class Create extends Component
 
     protected $rules = [
         'title'    => 'required|max:255|string',
-        'content'  => 'required|string',
+        'content'  => 'required|string|max:1000',
         'status'   => 'in:draft,published,unpublished',
     ];
 
@@ -34,7 +34,7 @@ class Create extends Component
             'status'    => $this->status ? $this->status:'draft',
             'post_type' => "page",
         ]);
-        return redirect(route('page-management'))->with('status','Page successfully created.');
+        return redirect(route('page-management'))->with('status',__('pages.Page successfully created'));
     }
 
     public function render()

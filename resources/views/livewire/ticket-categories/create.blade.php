@@ -39,8 +39,9 @@
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-end mt-4">
                                     <a  href="{{ route('ticket-category-management') }}" class="btn btn-light m-0">Cancel</a>
-                                    <button type="submit" name="submit" class="btn bg-gradient-dark m-0 ms-2">Create
-                                        Category</button>
+                                    <button type="submit" wire:loading.attr="disabled" name="submit" class="btn bg-gradient-dark m-0 ms-2">
+                                        <span wire:loading.remove wire:target="store"> Create Category</span>
+                                        <span wire:loading wire:target="store"><x-buttonSpinner></x-buttonSpinner></span></button>
                                 </div>
                             </div>
                         </div>
@@ -51,7 +52,4 @@
         </div>
     </div>
 </div>
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
-@endpush
-
+ 

@@ -7,10 +7,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Astrotomic\Translatable\Translatable;
 
-class Post extends Model
+class Post extends Model implements TranslatableContract
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory,SoftDeletes, Translatable;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    public $translatedAttributes = ['title', 'content'];
 
     /**
      * The attributes that are mass assignable.

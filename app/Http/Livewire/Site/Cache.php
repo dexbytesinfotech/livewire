@@ -12,7 +12,6 @@ class Cache extends Component
 {
     use AuthorizesRequests;
    
-
     public function cacheClear()
     { 
         \Artisan::call('cache:clear');
@@ -52,7 +51,6 @@ class Cache extends Component
         
     }
     
- 
     public function render()
     {
         return view('livewire.site.cache');

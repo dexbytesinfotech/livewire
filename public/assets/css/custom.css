@@ -1,10 +1,6 @@
 p.inputerror {
     margin-bottom: -1.125rem;
 }
-
-.bg-gradient-dark{
-    background-image: linear-gradient(360deg, #275382 0%, #3b83cf 100%) !important;
-} 
 .dropleft  .dropdown-menu {
       right: 90% !important;
       left: auto !important;
@@ -98,4 +94,171 @@ html {
 
 .navbar-vertical .navbar-nav > .nav-item .nav-link.active + .collapse .nav-item.active .nav-link.active, .navbar-vertical .navbar-nav > .nav-item .nav-link.active + .collapsing .nav-item.active .nav-link.active {
     background-image: linear-gradient(195deg, #5388bf 0%, #5589c2 100%) !important
+}
+
+/* Style the Image Used to Trigger the Modal */
+
+#other-info img:hover {opacity: 0.7;}
+
+/* The Modal (background) */
+#image-viewer {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.9);
+}
+.full-image {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+}
+.full-image { 
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+@keyframes zoom {
+    from {transform:scale(0)} 
+    to {transform:scale(1)}
+}
+#image-viewer .close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+#image-viewer .close:hover,
+#image-viewer .close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+.wu {
+    width: unset;
+}
+@media only screen and (max-width: 700px){
+    .full-image {
+        width: 100%;
+    }
+}
+
+.navbar-vertical.navbar-expand-xs {
+    max-width: 14rem !important;
+}
+
+@media (min-width: 1200px) {
+    .sidenav.fixed-start + .main-content {
+        margin-left: 14rem;
+    }
+}
+ 
+.custom-card .card-header .card-title {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem;
+    margin-left: 0;
+    font-size: 1.25rem;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.2;
+    color: inherit;
+}
+
+
+
+.custom-card .card-header .card-toolbar {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem 0;
+    flex-wrap: wrap;
+}
+.custom-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    flex-wrap: wrap;
+    min-height: 70px;
+    padding: 0 1.25rem;
+    color: var(--bs-card-cap-color);
+    background-color: var(--bs-card-cap-bg);
+    border-bottom: var(--bs-border-width) solid var(--bs-card-border-color);
+}
+.gap-5 {
+    gap: 1.25rem !important;
+}
+.ps-14 {
+    padding-left: 3.5rem !important;
+}
+.w-250px {
+    width: 250px !important;
+}
+
+.filter-select{ 
+    text-transform: uppercase;  
+    position: relative; 
+    color: #7b809a;
+    border-color: #7b809a;
+    display: inline-block;
+    font-weight: 700;
+    line-height: 1.45;  
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; 
+    padding: 0.625rem 1.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.5rem;
+    transition: all 0.15s ease-in;
+}
+ 
+.optionSelect {
+    font-weight: bold;
+    font-style: italic;
+    padding: 0.75rem 1.25rem;
+  }
+  .optionGroup{
+    padding: 0.75rem 1.25rem;
+  }
+
+.navbar-main {
+   height: 65px;
+}
+.sidenav-header {
+    height: 65px;
+}
+
+.bg-dark{
+    background-color: #192440 !important;
+} 
+.bg-gradient-dark{
+    background-image: linear-gradient(360deg, #275382 0%, #344767 100%) !important;
+}
+.navbar-nav .material-symbols-outlined {
+    max-width: 1.6rem;
+    overflow: hidden;
+}
+.nav-item .material-symbols-outlined {
+    max-width: 1.6rem;
+    overflow: hidden;
+}
+ 
+.password-visibility {
+    position: absolute;
+    top: 13px;
+    right: 5px;
+    z-index: 100;
+    cursor: pointer;
+    font-size: 17px;
 }

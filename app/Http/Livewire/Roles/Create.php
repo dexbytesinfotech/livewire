@@ -39,7 +39,7 @@ class Create extends Component
        $role = Role::create($validatedData);
        $role->syncPermissions($this->selectedPermissions);
 
-        return redirect(route('role-management'))->with('status','Role successfully created.');
+        return redirect(route('role-management'))->with('status', __('role.Role successfully created.'));
     }
 
 

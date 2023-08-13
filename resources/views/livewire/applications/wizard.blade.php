@@ -190,8 +190,7 @@
         </div>
     </div>
 </div>
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
+@push('js') 
 <script src="{{ asset('assets') }}/js/plugins/multistep-form.js"></script>
 <script src="{{ asset('assets') }}/js/plugins/choices.min.js"></script>
 <script>

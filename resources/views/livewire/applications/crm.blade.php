@@ -335,8 +335,7 @@
     </div>
 </div>
 <!--   Core JS Files   -->
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
+@push('js') 
 <script src="{{ asset('assets') }}/js/plugins/fullcalendar.min.js"></script>
 <!-- Kanban scripts -->
 

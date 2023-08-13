@@ -6,33 +6,10 @@
                             <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                                 <div class="bg-gradient-success shadow-success border-radius-lg py-3 pe-1">
                                     <h4 class="text-white font-weight-bolder text-center mt-2 mb-0">Register</h4>
-                                    {{-- <div class="row mt-3">
-                                        <div class="col-2 text-center ms-auto">
-                                            <a class="btn btn-link px-3" href="javascript:;">
-                                                <i class="fa fa-facebook text-white text-lg"></i>
-                                            </a>
-                                        </div>
-                                        <div class="col-2 text-center px-1">
-                                            <a class="btn btn-link px-3" href="javascript:;">
-                                                <i class="fa fa-github text-white text-lg"></i>
-                                            </a>
-                                        </div>
-                                        <div class="col-2 text-center me-auto">
-                                            <a class="btn btn-link px-3" href="javascript:;">
-                                                <i class="fa fa-google text-white text-lg"></i>
-                                            </a>
-                                        </div>
-                                    </div> --}}
+                                   
                                 </div>
                             </div>
-                            {{-- <div class="row px-xl-5 px-sm-4 px-3">
-                                <div class="mt-2 position-relative text-center">
-                                    <p
-                                        class="text-sm font-weight-bold mb-2 text-secondary text-border d-inline z-index-2 bg-white px-3">
-                                        or
-                                    </p>
-                                </div>
-                            </div> --}}
+                            
                             <div class="card-body">
                                 <form wire:submit.prevent='store' role="form">
 
@@ -94,7 +71,6 @@
                                             <option value="Super-Admin">Super Admin</option>
                                             <option value="Admin">Admin</option>
                                             <option value="Provider">Provider</option>
-                                            <option value="Driver">Driver</option>
                                             <option value="Customer">Customer</option>
                                             <option value="Unverified">Unverified</option>
                                         </select>

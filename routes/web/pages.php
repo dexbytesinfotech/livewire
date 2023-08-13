@@ -16,6 +16,6 @@ use App\Http\Livewire\Page\Index as PagesIndex;
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('pages', PagesIndex::class)->name('page-management');
-    Route::get('pages/edit/{id}', PagesEdit::class)->name('edit-page');
+    Route::get('pages/edit/{id}/{ref_lang?}', PagesEdit::class)->name('edit-page');
     Route::get('pages/create', PagesCreate::class)->name('add-page');
 });

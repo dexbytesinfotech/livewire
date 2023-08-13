@@ -16,7 +16,7 @@ class Create extends Component
     public $country_id = '';
     public $state_id = '';
     public $is_default = '';
-    public $is_active = '';
+    public $status = '';
     public $country = '';
     public $state = '';
 
@@ -26,16 +26,18 @@ class Create extends Component
         'country_id' =>'required',
         'state_id' =>'required',
         'is_default'=> 'nullable|between:0,1',
-        'is_active' => 'nullable|between:0,1'
+        'status' => 'nullable|between:0,1'
     ];
 
 
-    protected $messages = [
-        'country_id.required' => 'The Country name is required.',
-        'state_id.required' => 'The State name is required.',
-       
+    public function messages()
+    {
+        return[
+        'country_id.required' => __('world.The Country name is required.'),
+        'state_id.required' => __('world.The State name is required.'),
     ];
 
+    }
 
     public function updated($propertyName){
 
@@ -58,15 +60,15 @@ class Create extends Component
             Cities::where('is_default', 1)->where('country_id', $this->country_id )->where('state_id', $this->state_id )->update(['is_default' => 0]);
         }
 
-        Cities::create([
+      $city=  Cities::create([
             'name'         => $this->name,
             'country_id'  => $this->country_id,
             'state_id'  => $this->state_id,
             'is_default'   => $this->is_default ? 1 : 0,
-            'status' => $this->is_active ? 1 : 0,
+            'status' => $this->status ? 1 : 0,
         ]);
-        
-        return redirect(route('city-management'))->with('status','City successfully created.');
+       
+        return redirect(route('city-management'))->with('status',__('world.City successfully created.'));
     }
 
 

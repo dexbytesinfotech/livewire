@@ -58,7 +58,7 @@ class Edit extends Component
 
         $this->city->update();
 
-        return redirect(route('city-management'))->with('status', 'City successfully updated.');
+        return redirect(route('city-management'))->with('status', __('world.City successfully updated.'));
     }
 
 

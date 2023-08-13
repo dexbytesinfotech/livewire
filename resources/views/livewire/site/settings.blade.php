@@ -1,3 +1,6 @@
+@section('page_title')
+    Site Settings
+@endsection
 <div class="container-fluid py-4 bg-gray-200">
     <div class="row mb-5">
         <div class="col-lg-9 col-12 mx-auto position-relative">
@@ -63,12 +66,15 @@
                                         @endif
                                         <label for="file-input-logo"
                                             class="btn btn-sm btn-icon-only bg-gradient-light position-absolute bottom-0 end-0 mb-n2 me-n2">
-                                            <i class="fa fa-pen top-0" data-bs-toggle="tooltip" data-bs-placement="top" title=""
+                                            <i wire:loading.remove class="fa fa-pen top-0" data-bs-toggle="tooltip" data-bs-placement="top" title=""
                                                 aria-hidden="true" data-bs-original-title="Edit Image"
                                                 aria-label="Edit Image"></i><span class="sr-only">Edit Image</span>
+                                                <div wire:loading wire:target="app_logo_dark">
+                                                    <x-spinner></x-spinner>
+                                                </div>
                                         </label>
                                     
-                                        <input wire:model='app_logo_dark' type="file" id="file-input-logo">
+                                        <input wire:loading.attr="disabled" wire:model='app_logo_dark' type="file" id="file-input-logo">
                                     </div>
                                 </div>
                                 @error('app_logo_dark')
@@ -94,12 +100,15 @@
                                         @endif
                                         <label for="file-input-flogo"
                                             class="btn btn-sm btn-icon-only bg-gradient-light position-absolute bottom-0 end-0 mb-n2 me-n2">
-                                            <i class="fa fa-pen top-0" data-bs-toggle="tooltip" data-bs-placement="top" title=""
+                                            <i wire:loading.remove class="fa fa-pen top-0" data-bs-toggle="tooltip" data-bs-placement="top" title=""
                                                 aria-hidden="true" data-bs-original-title="Edit Image"
                                                 aria-label="Edit Image"></i><span class="sr-only">Edit Image</span>
+                                                <div wire:loading wire:target="app_favicon_logo_dark">
+                                                    <x-spinner></x-spinner>
+                                                </div>
                                         </label>
                                        
-                                        <input wire:model='app_favicon_logo_dark' type="file" id="file-input-flogo">
+                                        <input wire:loading.attr="disabled" wire:model='app_favicon_logo_dark' type="file" id="file-input-flogo">
                                     </div>
                                </div>
                                @error('app_favicon_logo_dark')
@@ -108,7 +117,7 @@
                                <p  class="text-sm">Recommended file size 76x76</p>
                             </div>
              
-                            <div class="col-12 mb-4">
+                            <!-- <div class="col-12 mb-4">
                                 <div class="input-group input-group-static">
                                     <label>{{ $settings['app_url']['label'] }} *</label>
                                     <input wire:model.lazy="app_url" class="form-control" type="text" readonly/>
@@ -126,7 +135,7 @@
                                 @error('app_api_url')
                                 <p class='text-danger inputerror'>{{ $message }} </p>
                                 @enderror
-                            </div>
+                            </div> -->
 
                             <div class="col-12 mb-4">
                                 <div class="input-group input-group-static">
@@ -151,7 +160,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-end mt-4">
-                                    <button type="submit" name="submit" class="btn bg-gradient-dark m-0 ms-2">Update General</button>
+                                    <button wire:loading.attr="disabled" type="submit" name="submit" class="btn bg-gradient-dark m-0 ms-2">Update General</button>
                                 </div>
                             </div>
                         </div>
@@ -353,7 +362,4 @@
         </div>
     </div>
 </div>
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
-@endpush
-
+ 

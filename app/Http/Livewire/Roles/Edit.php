@@ -13,7 +13,7 @@ class Edit extends Component
     use AuthorizesRequests;
 
     public Role $role;
-    protected $defaultRoles = ['Admin', 'Provider', 'Driver', 'Customer', 'Unverified'];
+    protected $defaultRoles = ['Admin', 'Provider',  'Customer', 'Unverified'];
     public $permissions;
     public $selectedPermissions=[];
     
@@ -51,7 +51,7 @@ class Edit extends Component
         $this->role->update();
         $this->role->syncPermissions($this->selectedPermissions);
 
-        return redirect(route('role-management'))->with('status', 'Role successfully updated.');
+        return redirect(route('role-management'))->with('status', __('role.Role successfully updated.'));
     }
 
 

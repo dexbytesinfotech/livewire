@@ -30,7 +30,6 @@ class AuthServiceProvider extends ServiceProvider
         // Passport::tokensCan([
         //     'customer' => 'Customer Type',
         //     'provider' => 'Provider Type',
-        //     'driver' => 'Driver Type',
         //     'admin' => 'Admin User Type',
         // ]);
 

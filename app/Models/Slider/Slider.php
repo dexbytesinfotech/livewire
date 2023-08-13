@@ -13,10 +13,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Astrotomic\Translatable\Translatable;
 
-class Slider extends Model
+class Slider extends Model implements TranslatableContract
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes,Translatable;
+     /**
+     * The transalate attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    public $translatedAttributes = ['name','description'];
 
     /**
      * The attributes that are mass assignable.
@@ -33,14 +41,6 @@ class Slider extends Model
         'start_date_time',
         'end_date_time'
     ];
-
-    public $sliderImageModel;
-
-    public function __construct()
-    {
-        $this->sliderImageModel = new SliderImage;
-    }
-
 
     public function sliderImage(): HasMany
     {
@@ -59,7 +59,7 @@ class Slider extends Model
     public function createSlug($name)
     {
         if (static::whereCode($slug = Str::slug($name))->exists()) {
-            $max = static::whereName($name)->latest('id')->skip(1)->value('code');
+            $max = static::whereTranslation('name',$name)->latest('id')->skip(1)->value('code');
             if (isset($max[-1]) && is_numeric($max[-1])) {
                 return preg_replace_callback('/(\d+)$/', function ($mathces) {
                     return $mathces[1] + 1;
@@ -90,8 +90,7 @@ class Slider extends Model
         }
 
         if (!empty($sliderIds)) {
-            $images = $this->sliderImageModel->getSliderImages($sliderIds);
-
+            $images = SliderImage::getSliderImages($sliderIds);
             return $images;
         }
 

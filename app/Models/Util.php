@@ -2,91 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Sms\Twillo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Http;
 
 class Util extends Model
 {
     use HasFactory;
 
-    /**
-     * Sends sms to user using Twilio's programmable sms client
-     * @param String $message Body of sms
-     * @param Number $recipients string or array of phone number of recepient
-     */
-    public static function LocationUtil($query, $distance,$radius,$is_data = false)
-    {
-        try
-        {
-            // [$acos,$latitude, $longitude, $latitude]
-            if ($is_data) {
-                $is_data = '*,';
-            }
-            $locationFilter = $is_data."( ? * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?)) + sin( radians(?) ) * sin( radians( latitude ) ) )  )  AS distance";
-
-            // Location Filter with lat long
-            $query->selectRaw($locationFilter, $distance);
-            // $query->having("distance", "<", $radius);
-
-            return $query;
-        }
-        catch (Exception $e)
-        {
-            return 'Error: ' . $e->getMessage();
-        }
-    }
-
-// Get Location Beetween Kilometer
-    public static function GetBetweenDistance($orgins=null)
-    {
-    try {
-
-    // 'origins' => '22.727299,75.888191',
-    // 'destinations' => '22.96,76.05',
-        $auth_token = config('geolocation.access_key');
-        $buffer_time = config('app_settings.delivery_time.value');
-        $max_time = config('app_settings.location_failed_time.value');
-
-        if (empty($auth_token)) {
-            return ($max_time+$buffer_time);
-        }
-        if (!is_array($orgins) || empty($orgins)) {
-            return ($max_time+$buffer_time);
-        }
-        $data = $orgins;
-        $data['key'] = $auth_token;
-        $response = Http::get('https://maps.googleapis.com/maps/api/distancematrix/json', $data);
-        if ($response['status'] == 'OK') {
-            if (isset($response['rows'][0]['elements'][0]['duration']['value'])) {
-               return ($buffer_time+gmdate("i", $response['rows'][0]['elements'][0]['duration']['value']));
-            }
-            return ($max_time+$buffer_time);
-        }
-        return ($max_time+$buffer_time);
-    } catch (Exception $e) {
-        return 0;
-    }
-    }
-
-
-    //
-    public static function RadiusFinder($query)
-    {
-        $radius = config('app_settings.delivery_distance.value');
-        switch (env('DB_CONNECTION')) {
-            case 'pgsql':
-                $query->where("distance", "<", $radius);
-                break;
-            case 'mysql':
-                $query->having("distance", "<", $radius);
-                break;
-
-            default:
-                return;
-            break;
-        }
-    }
 
     public static function displayPrice($price, $currency, $decimals = 2, $decimalpoint = '.', $seperator = ',', $currency_positions = 'left')
     {
@@ -113,4 +36,40 @@ class Util extends Model
     {
         return Util::displayPrice($price,config('app_settings.currency_symbol.value'),config('app_settings.number_of_decimals.value'),config('app_settings.thousand_separator.value'),config('app_settings.decimal_separator.value'),config('app_settings.currency_position.value'));
     }
+    /**
+     * Generate ramdom OTP when SMS send is enable
+     * @param String $otp int
+     */
+    public static function generateOTP()
+    {
+
+        if (!config('app_settings.enable_sms_notifications.value')) {
+            return 1234;
+        }
+
+        return rand(1000,9999);
+    }
+
+
+     /**
+     * Generate ramdom OTP when SMS send is enable
+     * @param String $otp int
+     */
+    public static function sendMessage($mobileNumber, $message = '')
+    {
+        if(empty($mobileNumber)) return false;
+
+        $smsChannel = config('sms.default');
+        $result = "";
+        switch ($smsChannel) {
+            case "twillo":
+                $result = Twillo::sendMessage($mobileNumber, $message);
+                break;
+            default:
+          }
+
+        return $result;
+    }
+
+
 }

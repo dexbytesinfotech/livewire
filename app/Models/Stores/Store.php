@@ -4,21 +4,24 @@ namespace App\Models\Stores;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Stores\StoreAddress;
 use App\Models\Stores\StoreMetaData;
-use App\Models\Order\Order;
-use App\Models\Stores\StoreOwners;
-use App\Models\Products\Product;
-use App\Models\OrderReviews\OrderReview;
-use App\Constants\OrderReviewTypes;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Astrotomic\Translatable\Translatable;
+use DB;
 
-class Store extends Model
+class Store extends Model implements TranslatableContract
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes,Translatable;
+     /**
+     * The transalate attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    public $translatedAttributes = ['name','descriptions','content','store_type'];
 
     /**
      * The attributes that are mass assignable.
@@ -30,11 +33,9 @@ class Store extends Model
         'name',
         'descriptions',
         'phone',
-        'restaurant_type',
         'country_code',
         'email',
         'content',
-        'order_preparing_time',
         'number_of_branch',
         'logo_path',
         'background_image_path',
@@ -43,6 +44,7 @@ class Store extends Model
         'is_open',
         'is_searchable',
         'is_features',
+        'store_type',
         'order_number',
         'commission_type',
         'commission_value',
@@ -69,17 +71,6 @@ class Store extends Model
         return $this->hasMany(storeMetaData::class);
     }
 
-
-    /**
-     * HasMany relation with Order
-     *
-     * @return BelongsTo
-     */
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class);
-    }
-
     /**
      * HasOne relation with StoreMetaData
      *
@@ -90,7 +81,9 @@ class Store extends Model
         return $this->hasOne(storeMetaData::class);
     }
 
-  /**
+
+
+    /**
      * Get Meta data by key
      *
      * @return Array
@@ -132,29 +125,6 @@ class Store extends Model
 
 
 
-    /**
-     * Get Business Houes
-     *
-     * @return Array
-     */
-    public function getBusinessHours($format = 'g:i A')
-    {
-        $businessHours = $this->getMetadata('business_hours');
-
-        if (is_array($businessHours)) {
-
-            foreach ($businessHours as $key => $value) {
-                $businessHours[$key]['closing_time'] = (int) $value['closing_time'];
-                $businessHours[$key]['opening_time'] = (int) $value['opening_time'];
-                $businessHours[$key]['opening_time_format'] = date($format, $value['opening_time']);
-                $businessHours[$key]['closing_time_format'] = date($format, $value['closing_time']);
-            }
-
-            return $businessHours;
-        }
-
-        return [];
-    }
 
    /**
      * @return Array
@@ -179,15 +149,13 @@ class Store extends Model
      */
     public function getDefaultDays()
     {
-        return [
-            "monday",
-            "tuesday",
-            "wednesday",
-            "thursday",
-            "friday",
-            "saturday",
-            "sunday",
-        ];
+        $timestamp = strtotime('next Monday');
+            $days = array();
+            for ($i = 0; $i < 7; $i++) {
+                $days[] = strftime('%A', $timestamp);
+                $timestamp = strtotime('+1 day', $timestamp);
+            }
+        return $days;
     }
 
     public function getDefaultBusinessHours($start = "07:00", $end = "23:00")
@@ -212,15 +180,6 @@ class Store extends Model
         return json_encode($storeOpeningHoursArray);
     }
 
-    /**
-     * Get all of the comments for the Store
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function products(): HasMany
-    {
-        return $this->hasMany(Product::class);
-    }
     //Filter
     // This is the scope we added
      public function scopeFilter($query, $filters,$request)
@@ -229,12 +188,12 @@ class Store extends Model
      }
 
      /**
-     * Get the User Order review
+     * Get all of the Business Hours for the BusinessHour
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function OrderRating()
+    public function BusinessHour(): HasMany
     {
-        return $this->hasOne(OrderReview::class, 'store_id', 'id')->where('rating_for',OrderReviewTypes::STORE);
+        return $this->hasmany( BusinessHour::class);
     }
 }

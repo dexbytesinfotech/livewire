@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Astrotomic\Translatable\Translatable;
 
-class Faq extends Model
+class Faq extends Model implements TranslatableContract
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes,Translatable;
 
     /**
      * The table associated with the model.
@@ -23,6 +25,7 @@ class Faq extends Model
      *
      * @var array<int, string>
      */
+    public $translatedAttributes = ['title', 'descriptions'];
     protected $fillable = [
         'id',
         'faq_category_id',

@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
                 
         $this->call(CreatePermissionSeeder::class);  // Create all route permission 
         $this->call(CreateAdminPermissionsSeeder::class); // Assign all permission to admin
-        $this->call(CreateProviderPermissionsSeeder::class); // Assign all permission to admin
+        $this->call(CreateAgentPermissionsSeeder::class); // Assign all permission to Agent 
  
     }
 }

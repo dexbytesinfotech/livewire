@@ -37,14 +37,14 @@ class Create extends Component
     {
         $description = $this->description;
             if ($description == '<p>b</p>'){
-                $this->$description = 'cannot send empty value';
+                $this->$description = __('slider.cannot send empty value');
             }
         $this->validate();
         
     }
 
     public function store(){
-
+      
         $this->validate();
 
         $faq = Slider::create([
@@ -57,7 +57,7 @@ class Create extends Component
         ]);
 
  
-        return redirect(route('slider-management'))->with('status','Slider successfully created.');
+        return redirect(route('slider-management'))->with('status', __('slider.Slider successfully created.'));
     }
 
 
