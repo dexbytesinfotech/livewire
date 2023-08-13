@@ -24,10 +24,14 @@ class Create extends Component
         'is_default'=> 'nullable|between:0,1',
         'status' => 'nullable|between:0,1'
     ];
-    protected $messages = [
-        'country_id.required' => 'The Country name is required.',
-       
+    public function messages()
+    {
+        return[
+        'country_id.required' => __('world.The Country name is required.'),
+        
     ];
+
+    }
 
 
     public function updated($propertyName){
@@ -54,7 +58,7 @@ class Create extends Component
             'status' => $this->status?1:0,
         ]);
         
-        return redirect(route('state-management'))->with('status','State successfully created.');
+        return redirect(route('state-management'))->with('status',__('world.State successfully created.'));
     }
 
 

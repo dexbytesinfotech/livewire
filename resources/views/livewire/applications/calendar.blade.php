@@ -163,7 +163,7 @@
     </div>
 </div>
 @push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
+ 
 <script src="{{ asset('assets') }}/js/plugins/fullcalendar.min.js"></script>
 
 <!-- Kanban scripts -->

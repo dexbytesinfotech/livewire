@@ -25,10 +25,12 @@ class Edit extends Component
     ];
 
     protected function rules(){
+        $this->user->password = trim($this->user->password);
         return [
-            'user.email' => 'required|email|unique:App\Models\User,email,'.$this->user->id,
-            'user.name' =>'required',
-            'user.phone' =>'required|min:8|unique:App\Models\User,phone,'.$this->user->id,            
+            'user.email' => 'email|unique:App\Models\User,email,'.$this->user->id,
+            'user.first_name' =>'required|regex:/^[a-zA-Z ]+$/|min:3',
+            'user.last_name' =>'required|regex:/^[a-zA-Z ]+$/|min:3',
+            'user.phone' =>'required|numeric|digits_between:8,10|unique:App\Models\User,phone,'.$this->user->id,            
             'role_id' => 'required|exists:Spatie\Permission\Models\Role,name',
             'user.country_code' => 'required',
         ];
@@ -37,8 +39,6 @@ class Edit extends Component
     public function mount($id) {
 
         $this->user = User::find($id);
-      
-        $this->user->phone = substr($this->user->phone , +(strlen($this->user->country_code)));
 
         $this->roles = Role::where('guard_name', 'web')->where('status', 1)->get(['id','name']);
         $this->role_id  = Role::where('name', $this->user->getRoleNames()->implode(','))->pluck('name','name')->first() ;
@@ -51,24 +51,14 @@ class Edit extends Component
 
     } 
 
-    public function resetField(){
-        $this->user->phone = substr($this->user->phone , (strlen($this->user->country_code)));
-    }
-
-    public function update(){
+   public function update(){
         
         $this->validate();
-        $this->user->phone =  $this->user->country_code. $this->user->phone;
-        
-       // updateOrCreate(['store_id' => $store_id, 'key' => 'business_hours'], ['value'=> $business_hours]);
-
         if(!$this->user->hasRole($this->role_id)){
             $this->user->syncRoles(explode(',', $this->role_id));     
         }
 
         $this->user->save();
-
-        $this->resetField();
         return redirect(route('user-management'))->with('status', 'User successfully updated.');
     }
 

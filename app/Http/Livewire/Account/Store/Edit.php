@@ -16,6 +16,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use App\Traits\GlobalTrait;
+use Illuminate\Support\Arr;
 
 class Edit extends Component
 {
@@ -39,13 +40,16 @@ class Edit extends Component
     protected $listeners = [
         'set:latitude-longitude' => 'setLatitudeLongitude',
         'remove',
-        'ownerRemove'
+        'updatedCountry',
+        'updatedState',
+        'ownerRemove',
+       
     ];
 
     protected function rules() {
         return [
             'store.email'                  => 'required|email|unique:App\Models\Stores\Store,email,'.$this->store->id,
-            'store.name'                   =>  'required|unique:App\Models\Stores\Store,name,'.$this->store->id,
+            'store.name'                   =>  'required|unique:App\Models\Stores\StoreTranslation,name,'.$this->store->id,
             'store.descriptions'           => 'required|max:1000',
             'store.phone'                  => 'required|numeric|digits_between:8,10',        
             'store.country_code'           => 'required',
@@ -53,8 +57,8 @@ class Edit extends Component
             'store.order_preparing_time'   => 'required|integer',
             'storeAddress.address_line_1'  => 'required|string',
             'storeAddress.landmark'        => 'required|string',
-            // 'storeAddress.city'         => 'required|string',
-            // 'storeAddress.state'        => 'required|string',
+            'storeAddress.city'         => 'required|string',
+            'storeAddress.state'        => 'required|string',
             'storeAddress.country'         => 'required|string',
             'storeAddress.zip_post_code'   => 'required|integer',
             'storeAddress.latitude'        => 'required|between:-90,90',
@@ -73,15 +77,39 @@ class Edit extends Component
         $this->store = Store::with('storeAddress')->find($storeId);  
         $this->store->phone = substr($this->store->phone , +(strlen($this->store->country_code)));
         $this->storeAddress = $this->store->storeAddress;
+       
+        
+        $this->countries = Country::all()->toArray();
+ 
+        $country =   Arr::first($this->countries,function ($val,$key){
+            return $val['name'] == $this->storeAddress->country;
+        });             
+        $country_id = isset($country['id']) ? $country['id'] : 0; 
+        if(!empty($country)){
+            $this->storeAddress->country = $country_id.','.$this->storeAddress->country;
+            $this->states = State::where('country_id', $country_id)->get()->toArray();
+        }else{
+            $this->states = collect();
+        }
 
-        $this->countries = Country::all();
-        $this->states = State::where('name', $this->storeAddress->country)->get();
-        $this->cities = Cities::where('name', $this->storeAddress->state)->get();
+
+        if (empty($this->states)) {
+            $this->cities = collect();
+        }else{
+            $state =   Arr::first($this->states,function ($val,$key){
+                return $val['name'] == $this->storeAddress->state;
+            });
+            $state_id = isset($state['id']) ? $state['id'] : 0; 
+            $this->storeAddress->state = $state_id.','.$this->storeAddress->state;
+            $this->cities = Cities::where('state_id', $state_id)->get()->toArray();
+        }
+
         $this->accounts = collect();
         $this->bussinessHours =  $this->store->getBusinessHours();
         $this->timeOptionsList = Utils::timeOptions();
         $this->accounts = StoreOwners::where('store_id', $this->store->id)->get();
     }
+
 
 
     public function updated($propertyName){
@@ -97,28 +125,56 @@ class Edit extends Component
             'bussinessHours.*.closing_time' => 'required_with:bussinessHours.*.opening_time|gt:bussinessHours.*.opening_time'
         ],
         [
-           'bussinessHours.*.closing_time.gt' => 'Closing time must be greater then opening time!'
+           'bussinessHours.*.closing_time.gt' => __('account.Closing time must be greater then opening time')
         ]);
        
         $storeHours = Store::find($this->store->id);
         $storeHours->metadata->updateOrCreate(['store_id' => $this->store->id, 'key' => 'business_hours'], ['value'=> $this->bussinessHours]);
 
         $this->dispatchBrowserEvent('alert', 
-        ['type' => 'success',  'message' => 'Bussiness Hours changed Successfully!']);
+        ['type' => 'success',  'message' => __('account.Bussiness hours changed successfully!')]);
     }
 
     public function update() {
 
         $validated = $this->validate(); 
         $this->store->phone =  $this->store->country_code. $this->store->phone;
+        $this->storeAddress->state   = substr($this->storeAddress->state, strpos($this->storeAddress->state, ",") + 1);   
+        $this->storeAddress->country = substr($this->storeAddress->country, strpos($this->storeAddress->country, ",") + 1); 
+      
+        
         $this->store->update();
 
         $this->storeAddress->update();
 
         $this->dispatchBrowserEvent('alert', 
-        ['type' => 'success',  'message' => 'Store successfully updated!']); 
+        ['type' => 'success',  'message' => __('account.Store successfully updated')]); 
         
+        return redirect(request()->header('Referer'));
     }
+
+    public function updatedCountry()
+    {    
+        
+        if (!is_null($this->storeAddress->country)) {
+            $countryId = substr($this->storeAddress->country, 0, strpos($this->storeAddress->country, ','));
+            $this->states = State::where('country_id', $countryId)->get();
+            if(empty($this->states)){
+                $this->states = collect();
+            }
+            $this->storeAddress->state = '';
+            $this->cities = collect();
+        }
+    }
+
+    public function updatedState()
+    {   
+        if (!is_null($this->storeAddress->state)) {
+            $stateId = substr($this->storeAddress->state, 0, strpos($this->storeAddress->state, ','));
+            $this->cities = Cities::where('state_id', $stateId)->get();
+        }
+    }
+    
  
     public function render()
     {  
@@ -136,7 +192,7 @@ class Edit extends Component
         Store::where('id', '=' , $storeId )->update(['status' => $status]);      
 
         $this->dispatchBrowserEvent('alert', 
-        ['type' => 'success',  'message' => 'Status changed Successfully!']);
+        ['type' => 'success',  'message' => __('account.Status changed successfully!')]);
 
    }
 
@@ -156,7 +212,7 @@ class Edit extends Component
         Store::where('id', '=' , $this->store->id )->update(['logo_path' => $logo_path]);
         
         $this->dispatchBrowserEvent('alert', 
-        ['type' => 'success',  'message' => 'Logo changed Successfully!']); 
+        ['type' => 'success',  'message' => __('account.Logo changed successfully!')]); 
 
    }
       
@@ -171,10 +227,10 @@ class Edit extends Component
         $this->dispatchBrowserEvent('swal:confirm', [
                 'action' => 'remove',
                 'type' => 'warning',  
-                'confirmButtonText' => 'Yes, delete it!',
-                'cancelButtonText' => 'No, cancel!',
-                'message' => 'Are you sure?', 
-                'text' => 'If deleted, you will not be able to recover this store data!'
+                'confirmButtonText' => __('account.Yes, delete it!'),
+                'cancelButtonText' => __('account.No ,cancel!'),
+                'message' => __('account.Are you sure?'), 
+                'text' => __('account.If deleted you will not be able to recover this store!')
             ]);
     }
 
@@ -202,7 +258,7 @@ class Edit extends Component
         User::where('id', '=' , $userId )->update(['status' => $status]);
 
         $this->dispatchBrowserEvent('alert', 
-        ['type' => 'success',  'message' => 'Status changed Successfully!']);     
+        ['type' => 'success',  'message' => 'Status changed successfully!']);     
 
    }
 
@@ -218,10 +274,10 @@ class Edit extends Component
         $this->dispatchBrowserEvent('swal:confirm', [
                 'action' => 'ownerRemove',
                 'type' => 'warning',  
-                'confirmButtonText' => 'Yes, delete it!',
-                'cancelButtonText' => 'No, cancel!',
-                'message' => 'Are you sure?', 
-                'text' => 'If deleted, You will be able to adding this owner with other store and same store!'
+                'confirmButtonText' => __('account.Yes, delete it!'),
+                'cancelButtonText' => __('account.No ,cancel!'),
+                'message' => __('account.Are you sure?'), 
+                'text' => 'If deleted You will be able to adding this owner with other store and same store!'
             ]);
     }
 
@@ -234,11 +290,10 @@ class Edit extends Component
     {
         StoreOwners::find($this->deleteId)->delete();
         $this->accounts = StoreOwners::where('store_id', $this->store->id)->get();
-        $this->dispatchBrowserEvent('swal:modal', [
-                'type' => 'success',  
-                'message' => 'Remove provider Delete Successfully!', 
-                'text' => 'It will not list on store provider table soon.'
-            ]);
+        
+        $this->dispatchBrowserEvent('alert', 
+            ['type' => 'success',  'message' => __('account.Remove provider delete successfully!')]);
+
     } 
 
 

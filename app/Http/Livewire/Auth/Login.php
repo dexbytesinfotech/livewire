@@ -6,6 +6,8 @@ use App\Models\User;
 use Livewire\Component;
 use App\Models\Stores\Store;
 use Illuminate\Validation\ValidationException;
+use Auth;
+use Illuminate\Support\Facades\Hash;
 
 class Login extends Component
 {
@@ -24,20 +26,31 @@ class Login extends Component
 
     public function mount() {
 
-       //$this->fill(['email' => 'admin@admin.com', 'password' => 'admin123']);
+        if (Auth::check())
+        {
+            return redirect()->intended('dashboard');
 
+        }
     }
 
     public function store()
     {
         $attributes = $this->validate();
-    
-        if (! auth()->attempt($this->credentials($attributes))) {
+       
+
+        $user = User::with(['roles', 'store'])->where(function ($query) use($attributes)
+        {
+            $query->orwhere('email',$attributes['email']);
+            $query->orwhere('phone',$attributes['email']);
+        })->first();
+       
+        if(!$user) {
+            return back()->with('status',"Please provide correct phone or email.");
+        }
+        if (!Hash::check($this->password, $user->password)) {
             return back()->with('status', "Your provided credentials could not be verified.");
         }
 
-        $user = User::with(['roles', 'store'])->find(auth()->user()->id);
-      
 
         if(!$user->status) {
             return back()->with('status', "Your account has been disabled, please see your system administrator");
@@ -48,7 +61,12 @@ class Login extends Component
         }
 
         if($user->hasRole('Provider')) {
+            if(!isset($user->store->store_id)) {
+                return back()->with('status', "Your store is not available, please see your system administrator");
+            }
+
             $store = Store::where('id', $user->store->store_id)->first();
+
             if($store->application_status != 'approved'){
                 return back()->with('status', $this->message($store));
             }
@@ -56,6 +74,10 @@ class Login extends Component
             if(!$store->status) {
                 return back()->with('status', "Your store has been disabled, please see your system administrator");
             }
+        }
+
+        if (! auth()->attempt($this->credentials($attributes))) {
+            return back()->with('status', "Your provided credentials could not be verified.");
         }
 
         session()->regenerate(); 

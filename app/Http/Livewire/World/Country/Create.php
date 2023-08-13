@@ -54,7 +54,7 @@ class Create extends Component
             'country_code' => $this->country_code
         ]);       
         
-        return redirect(route('country-management'))->with('status','Country successfully created.');
+        return redirect(route('country-management'))->with('status',__('components/country.Country successfully created.'));
     }
 
     public function render()

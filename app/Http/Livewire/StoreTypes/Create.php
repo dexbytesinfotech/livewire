@@ -10,13 +10,16 @@ class Create extends Component
 {    
     use AuthorizesRequests;
 
-    public $name = '';
+    public $name ;
     public $status;
 
-    protected $rules = [
-        'name'   => 'required|max:255|unique:App\Models\Stores\StoreType,name',
-        'status' => 'nullable|between:0,1',
-    ];
+    protected function rules(){
+        $this->name = trim($this->name);
+      return  [
+            'name'   => 'required|max:255|unique:App\Models\Stores\StoreTypeTranslation,name',
+            'status' => 'nullable|between:0,1',
+        ];
+    }
 
 
     public function updated($propertyName){
@@ -33,7 +36,7 @@ class Create extends Component
             'status' => $this->status ? 1 : 0,
         ]);
 
-        return redirect(route('store-type-management'))->with('status','store type successfully created.');
+        return redirect(route('store-type-management'))->with('status','Store type successfully created.');
     }
 
     public function render()

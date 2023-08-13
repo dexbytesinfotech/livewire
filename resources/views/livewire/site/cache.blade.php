@@ -1,4 +1,8 @@
-<div class="container-fluid py-4 bg-gray-200">
+@section('page_title')
+    Cache Management
+@endsection
+<div class="container-fluid py-4 bg-gray-200"  >
+    <x-loder></x-loder>
     <div class="row mb-5">
         <div class="col-lg-9 col-12 mx-auto position-relative">         
         
@@ -9,14 +13,15 @@
                 </div>
                 <div class="card-body pt-0">
                     <div class="row">
-                        <div class="col-md-9">
+                        <div class="col-md-8">
                             <div class="d-flex justify-content-end mt-4">
-                                <button type="submit" wire:click="mobileCacheClear" class="btn bg-gradient-info m-0 ms-2">Clear all api cache</button>
+                             
+                                <button wire:loading.attr="disabled" type="submit" wire:click="mobileCacheClear" class="btn bg-gradient-info m-0 ms-2">Clear all api cache</button>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="d-flex justify-content-end mt-4">
-                                <button type="submit" wire:click="cacheClear" class="btn bg-gradient-danger m-0 ms-2">Clear all CMS cache</button>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-end mt-4"> 
+                                <button wire:loading.attr="disabled" type="submit" wire:click="cacheClear" class="btn bg-gradient-danger m-0 ms-2">Clear all CMS cache</button>
                             </div>
                         </div>
                     </div>                
@@ -33,7 +38,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="d-flex justify-content-end mt-4">
-                                <button type="submit" wire:click="configClear" class="btn bg-gradient-warning m-0 ms-2">Clear Config Cache</button>
+                                <button  wire:loading.attr="disabled" type="submit" wire:click="configClear" class="btn bg-gradient-warning m-0 ms-2">Clear Config Cache</button>
                             </div>
                         </div>
                     </div>                
@@ -50,7 +55,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="d-flex justify-content-end mt-4">
-                                <button type="submit" wire:click="routeClear" class="btn bg-gradient-dark m-0 ms-2">Clear route cache</button>
+                                <button wire:loading.attr="disabled" type="submit" wire:click="routeClear" class="btn bg-gradient-dark m-0 ms-2">Clear route cache</button>
                             </div>
                         </div>
                     </div>                
@@ -60,7 +65,4 @@
          </div>
     </div>
 </div>
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
-@endpush
-
+ 

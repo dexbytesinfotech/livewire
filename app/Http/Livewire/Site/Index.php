@@ -4,6 +4,8 @@ namespace App\Http\Livewire\Site;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Routing\Route;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use App\Models\Config\SystemConfig;
 use Livewire\WithFileUploads;
@@ -96,8 +98,8 @@ class Index extends Component
             'app_name' => 'required|max:50|string',
             'support_number' => 'required|min:8|numeric',
             'support_email' => 'required|email',
-            'app_url' => 'required|url',
-            'app_api_url' => 'required|url',
+            // 'app_url' => 'required|url',
+            // 'app_api_url' => 'required|url',
             'app_logo_dark' => 'nullable|mimes:jpg,jpeg,png|max:1024',
             'app_favicon_logo_dark' => 'nullable|mimes:jpg,jpeg,png|max:1024',            
         ]);
@@ -123,18 +125,42 @@ class Index extends Component
             ]
         );    
 
-        if($this->app_logo_dark){
-            $appLogo = $this->app_logo_dark->store('logo', config('app_settings.filesystem_disk.value'));
+        if($this->app_logo_dark) {
+
+            $appLogoImage = Image::make($this->app_logo_dark->getRealPath());
+            $appLogoName  = time() . '.' . $this->app_logo_dark->getClientOriginalExtension();
+            Storage::disk(config('app_settings.filesystem_disk.value'))->put('logo'.'/'.$appLogoName, (string) $appLogoImage->encode());
+            
+            $appLogoImage->resize(170, null, function ($constraint) {
+                $constraint->aspectRatio();      
+                $constraint->upsize();           
+            });
+
+            Storage::disk(config('app_settings.filesystem_disk.value'))->put('thumbnails'.'/'.$appLogoName, $appLogoImage->stream());
+            $appLogoPath = 'thumbnails'.'/'.$appLogoName;
+           
             SystemConfig::updateOrCreate(['code' => 'app_logo'], [
-                'value'     => $appLogo
+                'value'     => $appLogoPath
                 ]
             );  
         }
 
         if($this->app_favicon_logo_dark){
-            $appFaviconLogo = $this->app_favicon_logo_dark->store('logo', config('app_settings.filesystem_disk.value'));
+
+            $appFaviconLogo= Image::make($this->app_favicon_logo_dark->getRealPath());
+            $appFaviconLogoName  = time() . '.' . $this->app_favicon_logo_dark->getClientOriginalExtension();
+            Storage::disk(config('app_settings.filesystem_disk.value'))->put('logo'.'/'.$appFaviconLogoName, (string) $appFaviconLogo->encode());
+            
+            $appFaviconLogo->resize(70,70, function ($constraint) {
+                $constraint->aspectRatio(); 
+                $constraint->upsize();                
+            });
+
+            Storage::disk(config('app_settings.filesystem_disk.value'))->put('thumbnails'.'/'.$appFaviconLogoName, $appFaviconLogo->stream());
+            $appFaviconLogoPath = 'thumbnails'.'/'.$appFaviconLogoName;
+          
             SystemConfig::updateOrCreate(['code' => 'app_favicon_logo'], [
-                'value'     => $appFaviconLogo
+                'value'     => $appFaviconLogoPath
                 ]
             );  
         }

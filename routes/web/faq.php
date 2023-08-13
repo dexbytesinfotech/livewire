@@ -19,6 +19,6 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => ['auth']], function () {
 
     Route::get('faq', FaqIndex::class)->name('faq-management');
-    Route::get('faq/edit/{id}', FaqEdit::class)->name('edit-faq');
+    Route::get('faq/edit/{id}/{ref_lang?}', FaqEdit::class)->name('edit-faq');
     Route::get('faq/create', FaqCreate::class)->name('add-faq');
 });

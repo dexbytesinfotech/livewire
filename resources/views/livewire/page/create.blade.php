@@ -1,85 +1,49 @@
-<div class="container-fluid py-4 bg-gray-200">
-    <div class="row mb-5">
-        <div class="col-lg-9 col-12 mx-auto position-relative">
-            @if (session('status'))
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="alert alert-success alert-dismissible text-white mt-3" role="alert">
-                        <span class="text-sm">{{ Session::get('status') }}</span>
-                        <button type="button" class="btn-close text-lg py-3 opacity-10" data-bs-dismiss="alert"
-                            aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            @endif
-           
-            <!-- Card Basic Info -->
-            <div class="card mt-4" id="basic-info">
-                <div class="card-header">
-                    <h5>Add Page</h5>
-                    <p>Create new page</p>
-                </div>
-                <div class="card-body pt-0">
-                    <form wire:submit.prevent="store">
-                        <div class="row ">
-                            <div class="col-12 mb-2">
-                                <div class="input-group input-group-static">
-                                    <label>Title *</label>
-                                    <input wire:model.lazy="title" type="text" class="form-control" placeholder="Enter a page title">
-                                </div>
-                                @error('title')
-                                <p class='text-danger inputerror'>{{ $message }} </p>
-                                @enderror
-                            </div>
-                            <div class="col-12 mt-2 mb-6">
-                                <div class="input-group input-group-static">
-                                    <label>Content *</label>
-                                    <div wire:ignore class="h-300  ms-auto me-1 w-100">
-                                        <div x-data x-ref="quill" x-init="quill = new Quill($refs.quill, {theme: 'snow'});
-                                        quill.on('text-change', function () {
-                                            $dispatch('quill-text-change', quill.root.innerHTML);
-                                        });"
-                                            x-on:quill-text-change.debounce.200ms="@this.set('content', $event.detail)">
-        
-                                            {!! $content !!}
-                                        </div>
-                                    </div>
-                                </div>
-                                @error('content')
-                                <p class='text-danger inputerror'>{{ $message }} </p>
-                                @enderror
-                            </div>  
-                            <div class="col-12  mb-4">
-                                <div class="input-group input-group-static">
-                                    <label for="status" class="">Status</label>
-                                    <select  wire:model.lazy="status" class="form-control" id="status">
-                                        <option value ="">Choose a status</option>
-                                        <option value="published">Published</option>
-                                        <option value="draft">Draft</option>
-                                        <option value="unpublished">Unpublished</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="d-flex justify-content-end mt-4">
-                                    <a  href="{{ route('page-management') }}" class="btn btn-light m-0">Cancel</a>
-                                    <button type="submit" name="submit" class="btn bg-gradient-dark m-0 ms-2">Create
-                                        Page</button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
- 
-        </div>
-    </div>
-</div>
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
-<script src="{{ asset('assets') }}/js/plugins/quill.min.js"></script>
-@endpush
+@section('page_title')
+    @lang("components/pages.add_page_title")
+@endsection
+<x-core.container>
+
+    {{-- loader --}}
+    {{-- <x-loder /> --}}
+
+    {{-- Alert message - alert-success, examples- alert-danger, alert-warning, alert-primary  --}}
+    @if (session('status'))
+        <x-alert class="alert-success">{{ Session::get('status') }}</x-alert>
+    @endif
+
+    {{-- Card --}}
+    <x-core.card class="col-lg-9 col-12 p-3 mx-auto position-relative">
+
+        {{-- Card Body --}}
+        <x-slot name="body">
+            {{-- Form --}}
+            <x-form.form submitText="Create Page" submit-target="store" cancel-route="{{ route('page-management') }}">
+
+                {{-- Input-group --}}
+                <x-input.group colspan="col-12" for="title" label="Title *" :error="$errors->first('title')">
+                    {{-- Input text --}}
+                    <x-input.text wire:model.lazy="title" placeholder="Enter a page title" />
+                </x-input.group>
+
+                <x-input.group colspan="col-12" for="content" label="Content *" :error="$errors->first('content')">
+                    {{-- Rech text --}}
+                    <x-input.rich-text wire:model.lazy="content">
+                        {{ $content }}
+                    </x-input.rich-text>
+                </x-input.group>
+
+                <x-input.group colspan="col-12" for="status" label="Select Status" :error="$errors->first('status')">
+                    <x-input.select class="form-control" wire:model="status" id="status" onfocus="focused(this)" onfocusout="defocused(this)"
+                        placeholder="Choose a status">
+                        <option value="published">Published</option>
+                        <option value="draft">Draft</option>
+                        <option value="unpublished">Unpublished</option>
+                    </x-input.select>
+                </x-input.group>
+
+            </x-form.form>
+        </x-slot>
+    </x-core.card>
+</x-core.container>
+
+

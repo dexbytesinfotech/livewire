@@ -1,0 +1,1 @@
+<x-table.cell {{ $attributes }}>{{ \Carbon\Carbon::parse($slot)->format(config('app_settings.date_format.value')) }}</x-table.cell>

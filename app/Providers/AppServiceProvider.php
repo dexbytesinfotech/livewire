@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Builder;
- 
+use Illuminate\Support\Facades\Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +29,33 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
+        Validator::extend('price', function($attribute, $value, $parameters, $validator) {
+            $min_field = $parameters[0];
+            $data = $validator->getData();
+            $min_value = $data[$min_field];
+            return $value > $min_value;
+          });   
+      
+          Validator::replacer('price ', function($message, $attribute, $rule, $parameters) {
+            return __('product.Sales price is greater than product price');
+          });
+
+          Validator::extend('phone', function($attribute, $value, $parameters, $validator) {
+            $data = $validator->getData();
+            if(isset($data['user']['country_code'])) {
+                $value = $data['user']['country_code'].$value;
+                $exists  = User::where('phone',$value)->whereNotIn("id",[ $data["user"]["id"]])->exists();
+            }else {
+                $value = $data['country_code'].$value;
+                $exists  = User::where('phone',$value)->exists();
+            }
+            return ($exists) ?  false : true;
+          });   
+      
+          Validator::replacer('phone', function($message, $attribute, $rule, $parameters) {
+            return __('user.The phone has already been taken.');
+          });
         
         Builder::macro('getRoleId', function ($name){
             $roles = Role::all();
@@ -60,25 +89,14 @@ class AppServiceProvider extends ServiceProvider
 
             if(array_key_exists('status', $filter) && is_numeric($filter['status'])){ 
                 $this->where('status' , '=' ,  $filter['status']);
-            }
+            }   
 
-            if(array_key_exists('role', $filter) && !empty($filter['role']) && $filter['role'] == 'driver' && array_key_exists('account_status', $filter) && !empty($filter['account_status'])){
-                $this->whereHas('driver', function ($query) use ($filter) {
-                    $query->where('account_status' , '=' ,  $filter['account_status']);
-                });
-            }else{    
-                // $this->whereHas('driver', function ($query) use ($filter) {           
-                //    $query->where('account_status' , '=' , 'approved');
-                // });
-            }  
 
             if($string) { 
                 return $this->where(function($query) use ($string) {
-                            $query->where('id', 'like', '%'.$string.'%')
-                            ->orWhere(DB::raw('lower(name)'), 'like', '%'.$string.'%')
+                            $query->where(DB::raw('lower(name)'), 'like', '%'.$string.'%')
                             ->orWhere(DB::raw('lower(email)'), 'like', '%'.$string.'%')
-                            ->orWhere('phone', 'like', '%'.$string.'%')
-                            ->orWhere('created_at', 'like', '%'.$string.'%');
+                            ->orWhere('phone', 'like', '%'.$string.'%');
                      });                     
                            
             } else {
@@ -87,34 +105,59 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
+        // Store Filter
+        Builder::macro('searchMultipleStore', function ($filters) {
 
-        Builder::macro('searchMultipleStore', function ($string, $filter) {
+            $query = $this;
+            $search = trim(strtolower($filters['search']));
+            $query->when(
+                $search,
+                fn($query, $search) => 
+                $query->Where(DB::raw('lower(email)'),  'like','%'.$search.'%')
+                ->orWhere('stores.phone', 'like', '%'.$search.'%')
+                ->orWhere('stores.created_at', 'like','%'.$search.'%')
+                ->orWhereTranslationLike('name', '%'.$search.'%')
+            )
+            ->when(
+                $filters["from_date"],
+                fn($query, $date) => $query->whereDate(
+                    "created_at",
+                    ">=",
+                    Carbon::parse($date)
+                )
+            )
+            ->when(
+                $filters["to_date"],
+                fn($query, $date) => $query->whereDate(
+                    "created_at",
+                    "<=",
+                    Carbon::parse($date)
+                )
+            )
+            ->when(
+                $filters["application_status"],
+                fn($query, $application_status) => 
+                    $query->where("application_status", ucfirst($application_status))
+               )
+            ->when(
+                $filters["store_type"],
+                fn($query, $store_type) => 
+                    $query->WhereTranslation("store_type", \Str::lower($store_type))
+                )
+            ->when(
+                $filters["application_status"] != 'waiting',
+                fn($query, $store_type) => 
+                    $query->whereNot("application_status", 'waiting')
+                );
 
-            if(array_key_exists('application_status', $filter) && !empty($filter['application_status'])){
-                $this->where('application_status', '=' , $filter['application_status']);
+            if(array_key_exists('status', $filters) && is_numeric($filters['status'])){ 
+                $query->where('status' , '=' ,  $filters['status']);
             }
-
-            if(array_key_exists('status', $filter) && is_numeric($filter['status'])){ 
-                $this->where('status' , '=' ,  $filter['status']);
-            }
-
-            if(array_key_exists('store_type', $filter) && !empty($filter['store_type'])){ 
-                $this->where('restaurant_type' , '=' ,  $filter['store_type']);
-            }
-          
-            if($string) {               
-                return $this->where(function($query) use ($string) {
-                            $query->where('id', 'like', '%'.$string.'%')
-                            ->orWhere(DB::raw('lower(name)'), 'like', '%'.$string.'%')
-                            ->orWhere(DB::raw('lower(email)'), 'like', '%'.$string.'%')
-                            ->orWhere('phone', 'like', '%'.$string.'%')
-                            ->orWhere('created_at', 'like', '%'.$string.'%');
-                        });                      
-                           
-            } else {
-                return $this;
-            }
+            return $query;
         });
+
+
+        
         Builder::macro('searchStoreOwner', function ($string) {
             if($string) {               
                 return $this->where(function($query) use ($string) {
@@ -132,8 +175,11 @@ class AppServiceProvider extends ServiceProvider
                 $this->where('store_id' , '=' ,  $filter['store_id']);
             } 
 
-            if(array_key_exists('created_at', $filter) && !empty($filter['created_at'])) {
-                $this->whereDate('created_at', '=', $filter['created_at']);
+
+            
+            if(array_key_exists('from_date', $filter) && !empty($filter['from_date']) && array_key_exists('to_date', $filter) && !empty($filter['to_date']) ) {
+                $this->whereDate('created_at','>=', Carbon::create($filter['from_date']));
+                $this->whereDate('created_at','<=',  Carbon::create($filter['to_date']));
             }
 
             if(array_key_exists('order_status', $filter) && !empty($filter['order_status'])){
@@ -193,7 +239,7 @@ class AppServiceProvider extends ServiceProvider
 
             if($string) {               
                 return $this->where(function($query) use ($string) {
-                        $query->where(DB::raw('lower(order_number)'), 'like', '%'.$string.'%')
+                        $query->where(DB::raw('order_number'), 'like', '%'.$string.'%')
                             ->orWhere(DB::raw('lower(order_status)'), 'like', '%'.$string.'%')
                             ->orWhere(DB::raw('lower(comments)'), 'like', '%'.$string.'%');
                         });                      
@@ -206,9 +252,7 @@ class AppServiceProvider extends ServiceProvider
         
         Builder::macro('searchMultiplePage', function ($string) {
             if($string) {               
-                return $this->where(function($query) use ($string) {
-                            $query->where(DB::raw('lower(title)'), 'like', '%'.$string.'%');
-                        });
+                return $this->WhereTranslationLike('title', '%'.$string.'%');
             } else {
                 return $this;
             }
@@ -217,7 +261,7 @@ class AppServiceProvider extends ServiceProvider
         Builder::macro('searchMultipleTax', function ($string) {
             if($string) {               
                 return $this->where(function($query) use ($string) {
-                            $query->where(DB::raw('lower(name)'), 'like', '%'.$string.'%');
+                            $query->where(DB::raw('lower(name)'),'like', '%'.$string.'%');
                         });
             } else {
                 return $this;
@@ -247,7 +291,7 @@ class AppServiceProvider extends ServiceProvider
 
         Builder::macro('searchMultipleTag', function ($string) {
             if($string) {
-                return $this->Where(DB::raw('lower(title)'), 'like', '%'.$string.'%');
+                return $this->WhereTranslationLike('title', '%'.$string.'%');
             } else {
                 return $this;
             }
@@ -255,10 +299,9 @@ class AppServiceProvider extends ServiceProvider
 
         Builder::macro('searchMultipleFaqs', function ($string) {
             if($string) {
-                return $this->Where('id', '=', intval($string))
-                             ->orWhere(DB::raw('lower(title)'), 'like', '%'.$string.'%')
-                             ->orWhereHas('start_date_time', function ($query) use ($string) {
-                                $query->where(DB::raw('lower(name)'), 'like', '%'.$string.'%');                                                     
+                return $this->WhereTranslationLike('title', '%'.$string.'%')
+                             ->orWhereHas('category', function ($query) use ($string) {
+                                $query->WhereTranslationLike('name','%'.$string.'%');                                                     
                             });
             } else {
                 return $this;
@@ -268,10 +311,10 @@ class AppServiceProvider extends ServiceProvider
 
         Builder::macro('searchMultipleSliders', function ($string) {
             if($string) {
-                return $this->where('id', '=', intval($string))
-                             ->orWhere(DB::raw('lower(name)'), 'like', '%'.$string.'%')
-                             ->orWhere(DB::raw('lower(start_date_time)'), 'like', '%'.$string.'%')
-                             ->orWhere(DB::raw('lower(end_date_time)'), 'like', '%'.$string.'%')
+                return $this->where('sliders.id', '=', intval($string))
+                             ->orWhereTranslationLike('name', '%'.$string.'%')
+                             ->orWhere('start_date_time', 'like', '%'.$string.'%')
+                             ->orWhere('end_date_time', 'like', '%'.$string.'%')
                              ->where('deleted_at', NULL);
                              
             } else {    
@@ -300,12 +343,12 @@ class AppServiceProvider extends ServiceProvider
             if($string) {  
             
                 return $this->where(function ($query) use ($string, $filter) {
-                    $query->where(DB::raw('lower(name)'), "like", "%" . $string . "%");
-                    // $query->orWhereHas('store', function ($query2) use ($string, $filter) {
-                    //     if(array_key_exists('is_provider', $filter) && !$filter['is_provider']){
-                    //         $query2->where('name', 'like', '%'.$string.'%');  
-                    //     }                                                                      
-                    // });
+                    $query->WhereTranslationLike('name', "%" . $string . "%");
+                    $query->orWhereHas('store', function ($query2) use ($string, $filter) {
+                        if(array_key_exists('is_provider', $filter) && !$filter['is_provider']){
+                            $query2->TranslationLike('name','%'.$string.'%');  
+                        }                                                                      
+                    });
                 });      
   
             } else {
@@ -353,12 +396,8 @@ class AppServiceProvider extends ServiceProvider
             if($string) {
 
                 return $this->where(function ($query) use ($string, $filter) {
-                    $query->where(DB::raw('lower(name)'), "like", "%" . $string . "%");
-                    // $query->orWhereHas('store', function ($query2) use ($string, $filter) {
-                    //     if(array_key_exists('is_provider', $filter) && !$filter['is_provider']){
-                    //         $query2->where('name', 'like', '%'.$string.'%');  
-                    //     }                                                                      
-                    // });
+                    $query->WhereTranslationLike('name', "%" . $string . "%");
+                
                 });    
              } else {
                 return $this;
@@ -367,16 +406,20 @@ class AppServiceProvider extends ServiceProvider
 
         Builder::macro('searchMultipleProduct', function ($string, $filter = []) {
             
-            if(array_key_exists('is_provider', $filter) && $filter['store_id']){
+            if(array_key_exists('store_id', $filter) && !empty($filter['store_id'])){
                 $this->where('store_id' , '=' ,  $filter['store_id']);
-            }                              
+            }  
+
+            if(array_key_exists('category_id', $filter) && !empty($filter['category_id'])){
+                $this->where('categories_ids' , '=' ,  $filter['category_id']);
+            }                           
      
             if($string) {
                 return $this->where(function ($query) use ($string) {
-                            $query->where(DB::raw('lower(name)'), "like", "%" . $string . "%");
+                            $query->whereTranslationLike('name', "%" . $string . "%");
                             $query->orWhere('sku', "like", "%" . $string . "%");
                             $query->orWhereHas('productCategories', function ($query2) use ($string) {
-                                $query2->where(DB::raw('lower(name)'), 'like', '%'.$string.'%');                                                     
+                                $query2->whereTranslationLike('name', '%'.$string.'%');                                                     
                             });
                         });                          
                      
@@ -390,42 +433,12 @@ class AppServiceProvider extends ServiceProvider
             
             if($string) {
                 return $this->where(function($query) use ($string) {
-                    $query->where(DB::raw('lower(name)'), 'like', '%'.$string.'%');
+                    $query->WhereTranslationLike('name', '%'.$string.'%');
                 });
             } else {
                 return $this;
             }
         });
-
-        Builder::macro('searchMultipleOrderReview', function ($string, $filter = []) {
-
-            if(array_key_exists('store_id', $filter) && $filter['store_id']){
-                $this->where('store_id' , '=' ,  $filter['store_id'])->where('rating_for', ['store']);
-            } 
-
-            if(array_key_exists('receiver_id', $filter) && $filter['receiver_id']){
-                $this->where('receiver_id' , '=' ,  $filter['receiver_id'])->where('rating_for', 'driver');
-            }  
-
-            if(array_key_exists('receiver_id', $filter) && array_key_exists('store_id', $filter) && $filter['receiver_id'] && $filter['store_id']  ){
-                $this->where('receiver_id' , '=' ,  $filter['receiver_id'])->orWhere('store_id' , '=' ,  $filter['store_id'])->whereIn('rating_for', ['driver', 'store']);
-            } 
-           
-            if(array_key_exists('created_at', $filter) && $filter['created_at']){
-                $this->whereDate('created_at' , '=' ,  $filter['created_at']);
-            } 
-
-            if($string) {
-                return $this->whereHas('order', function($query) use ($string) {
-                    $query->where(DB::raw('lower(order_number)'), 'like', '%'.$string.'%');
-                })->orWhereHas('sender', function($query2) use ($string) {
-                    $query2->where(DB::raw('lower(name)'), 'like', '%'.$string.'%');
-                });
-            } else {
-                return $this;
-            }
-        });
-
 
  
         Builder::macro('searchMultipleTicketCategory', function ($string, $filter = []) {
@@ -464,7 +477,7 @@ class AppServiceProvider extends ServiceProvider
         Builder::macro('searchMultipleMessage', function ($string) {
             if($string) {
                 return $this->where(function($query) use ($string) {
-                    $query->where( DB::raw('lower(order_number)'), 'like', '%'.$string.'%');
+                    $query->where( DB::raw('order_number'), 'like', '%'.$string.'%');
                 });
             } else {
                 return $this;
@@ -474,10 +487,12 @@ class AppServiceProvider extends ServiceProvider
 
         Builder::macro('searchMultiplePromotions', function ($string) {
             if($string) {
-                return $this->where('id', '=', intval($string))
-                             ->orWhere('start_date', 'like', '%'.$string.'%')
-                             ->orWhere('end_date', 'like', '%'.$string.'%')
-                             ->orWhere('created_at', 'like', '%'.$string.'%');
+                return $this->where(function($query) use ($string) {
+                             $query->orWhere('title', 'like', '%'.$string.'%');
+                             $query->orWhere('start_date', 'like', '%'.$string.'%');
+                             $query->orWhere('end_date', 'like', '%'.$string.'%');
+                             $query->orWhere('created_at', 'like', '%'.$string.'%');
+                });
             } else {
                 return $this;
             }
@@ -506,18 +521,14 @@ class AppServiceProvider extends ServiceProvider
                 if(array_key_exists('is_provider', $filter)) {
                     $this->where('store_id' , '=' ,  $filter['store_id']);
                 } 
-
-                if(array_key_exists('startDate' , $filter)&& !empty($filter['startDate'])) { 
-                    $query->whereDate('created_at' , '>=' ,  $filter['startDate']);
-                } 
             });
         
-            $this->whereHas('order', function ($query) use ($filter) {
-                
-                if(array_key_exists('endDate' , $filter)&& !empty($filter['endDate'])){ 
-                    $query->whereDate('created_at' , '<=' ,  $filter['endDate']);
-                } 
-            });
+            
+
+            if(array_key_exists('from_date', $filter) && !empty($filter['from_date']) && array_key_exists('to_date', $filter) && !empty($filter['to_date']) ) {
+                $this->whereDate('created_at','>=', Carbon::create($filter['from_date']));
+                $this->whereDate('created_at','<=',  Carbon::create($filter['to_date']));
+            }
 
             if(array_key_exists('status', $filter) && !empty($filter['status'])){
                 $this->where('status' , '=' ,  $filter['status']);
@@ -526,14 +537,10 @@ class AppServiceProvider extends ServiceProvider
             if(array_key_exists('store_id', $filter) && !empty($filter['store_id'])){
                 $this->where('store_id' , '=' ,  $filter['store_id']);
             } 
-            
-            if(array_key_exists('created_at', $filter) && !empty($filter['created_at'])) {
-                $this->whereDate('created_at', '=', $filter['created_at']);
-            }
 
             if($string) {
                 return $this->whereHas('order', function($query) use ($string) {
-                    $query->where(DB::raw('lower(order_number)'), 'like', '%'.$string.'%');
+                    $query->where(DB::raw('order_number'), 'like', '%'.$string.'%');
                 })->orWhereHas('user', function($query2) use ($string) {
                     $query2->where(DB::raw('lower(name)'), 'like', '%'.$string.'%');
                 });      
@@ -541,6 +548,8 @@ class AppServiceProvider extends ServiceProvider
                 return $this;
             }
         });
+
+
 
     }
 }

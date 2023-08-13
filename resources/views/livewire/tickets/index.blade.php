@@ -1,96 +1,107 @@
-<div class="container-fluid py-4">
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
-                <!-- Card header -->
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col-6">
-                            <h5 class="mb-0">Requests</h5>
-                        </div>
-                    </div>
-                </div>
-           
-                <div class="d-flex flex-row justify-content-between mx-4">
-                    <div class="d-flex mt-3 align-items-center justify-content-center">
-                        <p class="text-secondary pt-2">Show&nbsp;&nbsp;</p>
-                        <select wire:model="perPage" class="form-control mb-2" id="entries">
-                            <option value="10">10</option>
-                            <option selected value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                        <p class="text-secondary pt-2">&nbsp;&nbsp;entries</p>
-                    </div>
-                    <div class="mt-3 ">
-                        <input wire:model="search" type="text" class="form-control" placeholder="Search...">
-                    </div>
-                </div>
-                <x-table>
+{{-- Page Title --}}
+@section('page_title')
+    @lang("components/ticket.page_title")
+@endsection
 
-                    <x-slot name="head">
-                        <x-table.heading sortable wire:click="sortBy('id')"
-                            :direction="$sortField === 'id' ? $sortDirection : null"> ID
-                        </x-table.heading>
-                        <x-table.heading>Title
-                        </x-table.heading> 
-                        <x-table.heading>Customer Name
-                        </x-table.heading>     
-                        <x-table.heading> Status
-                        </x-table.heading>               
-                        <x-table.heading sortable wire:click="sortBy('created_at')"
-                        :direction="$sortField === 'created_at' ? $sortDirection : null"> Date
-                        </x-table.heading>                          
-                        <x-table.heading>Actions</x-table.heading>
-                    </x-slot>
-                    <x-slot name="body">
-                        @foreach ($tickets as $ticket)
+<x-core.container wire:init="init">
+    <x-loder />
+
+    {{-- Alert message - alert-success, examples- alert-danger, alert-warning, alert-primary  --}}
+    <x-slot name="alert">
+        @if (session('status'))
+            <x-alert class="alert-success">{{ Session::get('status') }}</x-alert>
+        @endif
+    </x-slot>
+
+    {{-- Card --}}
+    <x-core.card class="custom-card">
+        <x-slot name="header">
+
+            {{-- Filter row with seachable --}}
+            <x-table.container-filter-row seachable />
+
+                <x-core.card-toolbar>
+                    {{-- Header Bulk actions  --}}
+                    <x-dropdown label="{{ __('components/ticket.Actions') }}">
+                        <x-dropdown.item wire:click="exportSelected">
+                            @lang('components/ticket.Export')
+                        </x-dropdown.item>
+
+                        
+                        <x-dropdown.item wire:click="destroyMultiple()" class="dropdown-item text-danger">
+                            @lang('components/ticket.Delete')
+                        </x-dropdown.item>
+                    </x-dropdown>
+
+
+                     {{-- Filter Action  --}}
+                     <x-dropdown class="px-2 py-3 dropdown-md" label="{{ __('component.Filter') }}">
+                        <x-input.group inline for="filters.status" label="{{ __('components/ticket.Status') }}">
+                            <x-input.select wire:model="filters.status" placeholder="{{ __('components/ticket.Any Status') }}">
+                                <option class="optionGroup" value="open">Open</option>            
+                                <option class="optionGroup" value="completed">Completed</option>
+                                <option class="optionGroup" value="rejected">Rejected</option>                            </x-input.select>
+                        </x-input.group>
+                    
+                        {{-- Date renge filter --}}
+                        <x-table.filter-date-input />
+
+                        <x-button.link wire:click="resetFilters" class="mt-2"> @lang('component.Reset Filters') </x-button.link>
+
+                    </x-dropdown>
+
+                    {{--  Hide & show columns dropdown --}}
+<x-table.view-columns/>
+
+                </x-core.card-toolbar>
+        </x-slot>
+        <x-slot name="body">
+
+            {{--  Table with perPage and pagination --}}
+            <x-table perPage total="{{ $tickets->total() }}" id="users-list" paginate="{{ $tickets->links() }}">
+                <x-slot name="head">
+
+                    {{-- Select-all checkbox  --}}
+                    <x-table.heading-selected total="{{ $tickets->total() }}" />
+
+                    {{-- Dynamic columns heading --}}
+                    <x-table.heading columns />
+                    <x-table.heading> @lang('components/ticket.Actions') </x-table.heading>
+
+                </x-slot>
+                <x-slot name="body">
+                    {{-- Select records count (which rows checkbox checked) --}}
+                    <x-table.row-selected-count selectPage="{{ $selectPage }}" selectedAll="{{ $selectAll }}"
+                        count="{{ $tickets->count() }}" total="{{ $tickets->total() }}" />
+
+                        {{-- Table row --}}
+                        @forelse ($tickets as $ticket)
                         <x-table.row wire:key="row-{{ $ticket->id }}">
-                            <x-table.cell>{{ $ticket->id }}</x-table.cell>
-                            <x-table.cell>{{ $ticket->title }} <br>
-                                @if($ticket->category->name == 'update-mobile-number')
-                                    <em> @php $newMobile = json_decode($ticket->content, true) @endphp
-                                    {{  $ticket->user->country_code.' '.substr($ticket->user->phone , +(strlen($ticket->user->country_code)))  }} <b>-></b> {{ $newMobile['country_code']  }} {{ $newMobile['mobile']  }} 
-                                    </em>
-                                @endif
-                            </x-table.cell> 
-                            <x-table.cell><a href="{{ route('view-user',  $ticket->user) }}">{{ $ticket->user->name }}</a></x-table.cell> 
-                            <x-table.cell>{{ ucfirst($ticket->status) }}</x-table.cell> 
-                            <x-table.cell>{{ $ticket->created_at }}</x-table.cell> 
-                            <x-table.cell>
-                                <div class="dropdown dropup dropleft">
-                                    <button class="btn bg-gradient-default" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span class="material-icons">
-                                            more_vert
-                                        </span>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        @if($ticket->status == 'open')
-                                            <li><a class="dropdown-item text-success"  data-original-title="Approve" title="Approve" wire:click="statusUpdate({{ $ticket }}, 'closed')">Approve</a></li>
-                                            <li><a class="dropdown-item text-warning "  data-original-title="Reject" title="Reject" wire:click="statusUpdate({{ $ticket }}, 'rejected')">Reject</a></li>
-                                            <li><hr></li>
-                                        @endif
-                                        <li><a class="dropdown-item text-danger"  data-original-title="Remove" title="Remove" wire:click="destroyConfirm({{ $ticket->id }})">Delete</a></li>
-                                   </ul>
-                                </div>   
 
-                            </x-table.cell>
+                            {{-- Select checkbox --}}
+                            <x-table.cell-selected value="{{ $ticket->id }}" />
+                        
+                            <x-table.cell column="title" href="">{{ $ticket->title }}</x-table.cell>
+                            <x-table.cell column="user_id" href="">{{ $ticket->user->name }}</x-table.cell>
+
+                            <x-table.cell-date column="created_at">{{ $ticket->created_at }}</x-table.cell-date>
+                            <x-table.cell column="status">{{ ucfirst($ticket->status) }}</x-table.cell> 
+
+                       
+                        
+                            {{-- Action , examples- edit, view, delete  --}}
+                            <x-table.cell-dropdown>
+                                <x-table.dropdown-item class="dropdown-item text-danger" 
+                                    title="{{ __('components/ticket.Delete') }}" wire:click="destroyConfirm({{ $ticket->id }})">
+                                    {{ __('components/ticket.Delete') }}
+                                </x-table.dropdown-item>
+                            </x-table.cell-dropdown>
                         </x-table.row>
-                        @endforeach
-                    </x-slot>
-                </x-table>
-                <div id="datatable-bottom">
-                    {{ $tickets->links() }}
-                </div>
-                    @if($tickets->total() == 0)
-                        <div>
-                            <p class="text-center">No records found!</p>
-                        </div>
-                    @endif
-            </div>
-        </div>
-    </div>
-</div>
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
-@endpush
+                    @empty
+                        <x-table.no-record-found />
+                    @endforelse
+                </x-slot>
+            </x-table>
+        </x-slot>
+    </x-core.card>
+</x-core.container>

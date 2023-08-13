@@ -28,15 +28,7 @@ class Register extends Component
 
     public function store(){
 
-        $attributes = $this->validate();
-        dd($attributes);
-        // $role_id =  $attributes->input('role_id');
-        // $payload = $request->all();
-
-        // unset($payload['role_id']);
-
-        // $resource = $user->create($payload);
-
+         $this->validate();
        $user =   User::create([
             'name'           => $this->name,
             'email'          =>$this->email,
@@ -50,13 +42,6 @@ class Register extends Component
         auth()->login($user);
 
         return redirect('laravel-examples/user-profile');
-    }
-
-    public function mount(){
-
-        // if($request->role_id ){
-        //     $resource->assignRole(explode(',',$request->role_id));
-        // }
     }
 
     public function render()

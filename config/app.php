@@ -174,6 +174,9 @@ return [
         //settings
         App\Providers\SettingServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
+        //Image Resizing
+        Intervention\Image\ImageServiceProvider::class
     ],
 
     /*
@@ -230,6 +233,8 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Utils' => App\Models\Utils::class,
         'Debugbar' => Barryvdh\Debugbar\Facades\Debugbar::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Image' => Intervention\Image\Facades\Image::class
     ],
 
 ];

@@ -24,6 +24,7 @@ class Cities extends Model
         'state_id',
         'order',
         'is_default',
+        'status',
     ];
     
     /**

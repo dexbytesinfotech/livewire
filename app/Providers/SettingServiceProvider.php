@@ -31,18 +31,18 @@ class SettingServiceProvider extends ServiceProvider
             // 1 day  = 1440 Min
             // 1 Hours = 60 Min
             
-            $settings = $cache->remember('app_settings', 60, function() use ($settings){           
-                $config = $settings->get();
-                $globle = new \StdClass;
-               
-                foreach ($config as $key => $value) {
-                    $keys = $value->code;
-                    $globle->$keys = $value;
-                }
-  
-               return (array) $globle;
-
-            });
+          //  $settings = $cache->remember('app_settings', 60, function() use ($settings){           
+            $config = $settings->get();
+            $globle = new \StdClass;
+            
+            foreach ($config as $key => $value) {
+                $keys = $value->code;
+                $globle->$keys = $value;
+            }
+            $settings = (array) $globle;
+            
+           // return (array) $globle;
+            //});
     
            if(!empty($settings)){
                 config()->set('app_settings', $settings);

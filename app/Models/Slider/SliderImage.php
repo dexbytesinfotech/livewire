@@ -10,10 +10,18 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Slider\Slider;
 use Carbon\Carbon;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Astrotomic\Translatable\Translatable;
 
-class SliderImage extends Model
+class SliderImage extends Model implements TranslatableContract
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes,Translatable;
+    /**
+     * The transalate attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    public $translatedAttributes = ['title','descriptions'];
 
     /**
      * The attributes that are mass assignable.

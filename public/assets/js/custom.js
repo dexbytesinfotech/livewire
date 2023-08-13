@@ -87,3 +87,20 @@ window.addEventListener('swal:joinPromotion', function(event){
      }
  });
 });
+
+$(document).on('click','.pagination  .page-item:nth-last-child(2)', function() {
+    $('.main-content').scrollTop(0);
+});
+
+ 
+    $(document).ready(function () {
+    var startDate = flatpickr("#from_date", { minDate: null });
+    var endDate = flatpickr("#to_date", { minDate: new Date() });
+        startDate.set("onChange", function(d) { 
+        endDate.set("minDate", new Date(d)); 
+    });
+    endDate.set("onChange", function(d) { 
+        startDate.set("maxDate", d); 
+    });
+    });
+    

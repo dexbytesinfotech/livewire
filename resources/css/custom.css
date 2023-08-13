@@ -1,0 +1,257 @@
+p.inputerror {
+    margin-bottom: -1.125rem;
+}
+.dropleft  .dropdown-menu {
+      right: 90% !important;
+      left: auto !important;
+ }
+ .dropleft .dropdown-menu:after {    
+    left: 150px;
+}
+.form-switch .form-check-input:checked {
+    background-color: #4caf50;
+}
+.page-header-bg-sign-in {
+    background-image: url('../img/bg-home.jpg');
+}
+.review-table {
+    white-space: inherit !important;
+}
+.conversation-messages{
+    height: 300px;
+    overflow: auto;
+}
+
+.table-responsive {
+    overflow-x: visible !important;
+}
+
+
+html {
+    margin-left: calc(100vw - 100%);
+    margin-right: 0;
+  }
+  @media screen and (min-width: 960px) {
+    html {
+      margin-left: calc(100vw - 100%);
+      margin-right: 0;
+    }
+  }
+  
+  html {
+    width: 100vw;
+    overflow-x: hidden;
+  }
+
+
+.navbar-vertical .navbar-nav > .nav-item .nav-link.active + .collapse .nav-item .nav-link.active + .collapse .nav-item .nav-link.active, .navbar-vertical .navbar-nav > .nav-item .nav-link.active + .collapsing .nav-item .nav-link.active + .collapse .nav-item .nav-link.active {
+    background-image: linear-gradient(195deg, #558cc6 0%, #568dc7 100%);
+}
+
+.input-group.input-group-outline.is-focused .form-label + .form-control, .input-group.input-group-outline.is-filled .form-label + .form-control {
+    border-color: #257ae9 !important;
+    border-top-color: transparent !important;
+    box-shadow: inset 1px 0 #1a73e8, inset -1px 0 #1a73e8, inset 0 -1px #1a73e8;
+}
+.input-group.input-group-outline.is-focused .form-label, .input-group.input-group-outline.is-filled .form-label {
+    color: #1a73e8;    
+}
+.input-group.input-group-outline.is-focused .form-label:before, .input-group.input-group-outline.is-focused .form-label:after, .input-group.input-group-outline.is-filled .form-label:before, .input-group.input-group-outline.is-filled .form-label:after {
+    border-top-color: #1a73e8;
+    box-shadow: inset 0 1px #1a73e8;
+}
+
+.input-group.input-group-dynamic .form-control, .input-group.input-group-dynamic .form-control:focus, .input-group.input-group-static .form-control, .input-group.input-group-static .form-control:focus {
+    background-image: linear-gradient(0deg, #1a73e8 2px, rgba(156, 39, 176, 0) 0), linear-gradient(0deg, #d2d2d2 1px, rgba(209, 209, 209, 0) 0);
+    border-radius: 0 !important;
+}
+
+.input-group.input-group-dynamic.is-focused label, .input-group.input-group-static.is-focused label {
+    color: #1a73e8;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked, .form-check:not(.form-switch) .form-check-input[type="radio"]:checked {
+    border-color: #ccc;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="radio"]:after {
+    background-image: linear-gradient(195deg, #4caf50 0%, #4caf50 100%), var(--bs-gradient) !important;
+}
+
+.select2-container--default .select2-selection--single{
+    border:none !important;
+    border-bottom: 1px solid #dadada !important;   
+}
+.select2-container .select2-selection--multiple{
+    border:none !important;
+    border-bottom: 1px solid #dadada !important;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice{
+    border: 1px solid #316aa7 !important;
+    background-color: #fff !important;
+}
+
+
+.navbar-vertical .navbar-nav > .nav-item .nav-link.active + .collapse .nav-item.active .nav-link.active, .navbar-vertical .navbar-nav > .nav-item .nav-link.active + .collapsing .nav-item.active .nav-link.active {
+    background-image: linear-gradient(195deg, #5388bf 0%, #5589c2 100%) !important
+}
+
+/* Style the Image Used to Trigger the Modal */
+
+#other-info img:hover {opacity: 0.7;}
+
+/* The Modal (background) */
+#image-viewer {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.9);
+}
+.full-image {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+}
+.full-image { 
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+@keyframes zoom {
+    from {transform:scale(0)} 
+    to {transform:scale(1)}
+}
+#image-viewer .close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+#image-viewer .close:hover,
+#image-viewer .close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+.wu {
+    width: unset;
+}
+@media only screen and (max-width: 700px){
+    .full-image {
+        width: 100%;
+    }
+}
+
+.navbar-vertical.navbar-expand-xs {
+    max-width: 14rem !important;
+}
+
+@media (min-width: 1200px) {
+    .sidenav.fixed-start + .main-content {
+        margin-left: 14rem;
+    }
+}
+ 
+.custom-card .card-header .card-title {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem;
+    margin-left: 0;
+}
+
+.custom-card .card-header .card-toolbar {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem 0;
+    flex-wrap: wrap;
+}
+.custom-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    flex-wrap: wrap;
+    min-height: 70px;
+    padding: 0 1.25rem;
+    color: var(--bs-card-cap-color);
+    background-color: var(--bs-card-cap-bg);
+    border-bottom: var(--bs-border-width) solid var(--bs-card-border-color);
+}
+.gap-5 {
+    gap: 1.25rem !important;
+}
+.ps-14 {
+    padding-left: 3.5rem !important;
+}
+.w-250px {
+    width: 250px !important;
+}
+
+.filter-select{ 
+    text-transform: uppercase;  
+    position: relative; 
+    color: #7b809a;
+    border-color: #7b809a;
+    display: inline-block;
+    font-weight: 700;
+    line-height: 1.45;  
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; 
+    padding: 0.625rem 1.5rem;
+    font-size: 0.75rem;
+    border-radius: 0.5rem;
+    transition: all 0.15s ease-in;
+}
+ 
+.optionSelect {
+    font-weight: bold;
+    font-style: italic;
+    padding: 0.75rem 1.25rem;
+  }
+  .optionGroup{
+    padding: 0.75rem 1.25rem;
+  }
+
+.navbar-main {
+   height: 65px;
+}
+.sidenav-header {
+    height: 65px;
+}
+
+.bg-dark{
+    background-color: #192440 !important; 
+} 
+.bg-gradient-dark{
+    background-image: linear-gradient(360deg, #080c30 0%, #080c30 100%) !important;
+}
+
+/* .bg-gradient-dark{
+    background-image: linear-gradient(360deg, #192440 0%, #192440 100%) !important;
+}  */
+
+
+#modal-container {
+    vertical-align: middle !important;
+}
+
+.navbar-nav .material-symbols-outlined {
+    max-width: 1.5rem;
+}
+
+
+
+

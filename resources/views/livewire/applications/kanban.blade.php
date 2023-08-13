@@ -123,8 +123,7 @@
             </div>
             <div class="hidden opacity-50 fixed inset-0 z-40 bg-black" id="jkanban-info-modal-backdrop"></div>
         </div>
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
+@push('js') 
 <script>
     // jkanban init
     (function() {

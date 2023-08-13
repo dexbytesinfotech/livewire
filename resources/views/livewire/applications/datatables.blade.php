@@ -976,8 +976,7 @@
            </div>
        </div>
    </div>
-   @push('js')
-   <script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
+   @push('js') 
    <script src="{{ asset('assets') }}/js/plugins/datatables.js"></script>
    <script>
        const dataTableBasic = new simpleDatatables.DataTable("#datatable-basic", {

@@ -47,7 +47,7 @@ class Edit extends Component
         
         $this->country->update();
 
-        return redirect(route('country-management'))->with('status', 'Country successfully updated.');
+        return redirect(route('country-management'))->with('status', __('world.Country successfully updated.'));
     }
 
 

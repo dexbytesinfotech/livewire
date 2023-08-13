@@ -1,6 +1,8 @@
+@section('page_title')
+  Profile
+@endsection
 <div class="container-fluid my-3 py-3">
-    
-    <div class="row mb-5">
+     <div class="row mb-5">
         @if(env('GOOGLE_MAP_KEY') == '')
             <div class="col-lg-10 col-10 mx-auto position-relative">
                 <div class="row mb-5 text-center">
@@ -139,7 +141,7 @@
             </div>
             <div class="card-body pt-0">               
                     <div class="row">
-                        <div class="col-8 mb-4">
+                        <div class="col-12 mb-4">
                             <div class="input-group input-group-static">
                                 <label>Name *</label>
                                 <input wire:model.lazy="store.name" type="text" class="form-control" placeholder="Enter a Name">
@@ -149,7 +151,7 @@
                             @enderror
                         </div>
                         
-                        <div class="col-4 mb-4">
+                        <!-- <div class="col-4 mb-4">
                             <div class="input-group input-group-static">
                                 <label>Number Of Branch *</label>
                                 <input wire:model.lazy="store.number_of_branch" type="text" class="form-control" placeholder="Enter a Number Of Branch e.g 1, 2, 3 etc..">
@@ -157,7 +159,7 @@
                             @error('store.number_of_branch')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
-                        </div>  
+                        </div>   -->
 
                         <div class="col-2  mb-4">
                             <div class="input-group input-group-static">
@@ -283,8 +285,10 @@
 
                         <div class="col-4  mb-4">
                             <div class="input-group input-group-static">
+
                                 <label >Country *</label>
-                                <select class="form-control input-group input-group-dynamic" wire:model.lazy="storeAddress.country" id="countryName" onfocus="focused(this)" onfocusout="defocused(this)">
+                                <select class="form-control input-group input-group-dynamic"  wire:model.lazy="storeAddress.country" wire:change="$emit('updatedCountry')"  id="countryName" onfocus="focused(this)" onfocusout="defocused(this)">
+                                    <option value = '' selected>Select Country</option>
                                     @foreach ($countries  as $countryValue)
                                         <option value="{{ $countryValue['id'] }},{{ $countryValue['name'] }}">{{ $countryValue['name']}}</option>
                                     @endforeach
@@ -294,11 +298,11 @@
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
                         </div>       
-                        
                         <div class="col-4  mb-4">
                             <div class="input-group input-group-static">
                                 <label>State *</label>  
-                                <select class="form-control input-group input-group-dynamic" wire:model.lazy="storeAddress.state" id="stateName" onfocus="focused(this)" onfocusout="defocused(this)">
+                                <select class="form-control input-group input-group-dynamic"  wire:loading.attr="disabled"  wire:model.lazy="storeAddress.state" wire:change="$emit('updatedState')" id="stateName" onfocus="focused(this)" onfocusout="defocused(this)">
+                                    <option value = ''selected>Select State</option>
                                     @foreach ($states  as $stateValue)
                                     <option value="{{ $stateValue['id'] }},{{ $stateValue['name'] }}">{{ $stateValue['name']}}</option>
                                     @endforeach
@@ -308,11 +312,13 @@
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
                         </div>   
+
                         
                         <div class="col-4  mb-4">
                             <div class="input-group input-group-static">
                                 <label>City *</label>
-                                <select class="form-control input-group input-group-dynamic" wire:model.lazy="storeAddress.city" id="cityName">
+                                <select class="form-control input-group input-group-dynamic"  wire:loading.attr="disabled"  wire:model.lazy="storeAddress.city" id="cityName">
+                                    <option value = '' selected>Select City</option>
                                     @foreach ($cities as $cityValue)
                                         <option value="{{ $cityValue['name'] }}">{{ $cityValue['name']}}</option>
                                     @endforeach
@@ -356,7 +362,6 @@
                         <x-table.heading>
                             Creation Date
                         </x-table.heading>                        
-                        <x-table.heading>Actions</x-table.heading>
                     </x-slot>
 
                     <x-slot name="body">
@@ -372,22 +377,13 @@
                             </div>
                             </x-table.cell>                            
                             <x-table.cell>{{ $account->created_at }}</x-table.cell>
-                            <x-table.cell>
-                                 @if($account->user->id != auth()->user()->id)  
-                                    <a  href="javascript:void(0)"  wire:click="destroyOwnerConfirm({{ $account->id }})">
-                                    <span class="material-symbols-outlined" >
-                                    delete
-                                    </span>
-                                    </a>
-                                @endif
-                            </x-table.cell>
                         </x-table.row>
                         @endforeach
                     </x-slot>
                 </x-table>
                 @if(empty($accounts))
                     <div>
-                        <p class="text-center">No account assign to store!</p>
+                        <p class="text-center">{{ __('store.No account assign to store!') }}</p>
                     </div> 
                 @endif
             </div>
@@ -459,6 +455,3 @@
         </div>
     </div>
 </div>
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/quill.min.js"></script>
-@endpush

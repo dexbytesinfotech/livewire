@@ -1,209 +1,128 @@
-<div class="container-fluid py-4">
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
-                <!-- Card header -->
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col col-6">
-                            <h5 class="mb-0">
-                            @if($this->account_status == 'waiting')
-                                Unverified {{Str::ucfirst($this->filter['role'] == '' ? 'All User' :  $this->filter['role']) }}s 
-                            @else
-                                {{Str::ucfirst($this->filter['role'] == '' ? 'All User' :  $this->filter['role']) }}s
-                            @endif
-                            </h5>
-                        </div>
-                        <div class="col col-6 text-end">
-                            @if($this->filter['role'] == '' || $this->filter['role'] == 'provider')
-                                @can('add-user')
-                                    <a class="btn bg-gradient-dark mb-0 me-4" href="{{ route('add-user', ['role' => $this->filter['role']]) }}"><i
-                                            class="material-icons text-sm">add</i>&nbsp;&nbsp;Add New</a>
-                                @endcan
-                            @endif
-                        </div>
-                    </div>
-                </div>
-                @if (Session::has('status'))
-                <div class="alert alert-success alert-dismissible text-white mx-4" role="alert">
-                    <span class="text-sm">{{ Session::get('status') }}</span>
-                    <button type="button" class="btn-close text-lg py-3 opacity-10" data-bs-dismiss="alert"
-                        aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                @elseif (Session::has('error'))
-                <div class="alert alert-danger alert-dismissible text-white mx-4" role="alert">
-                    <span class="text-sm">{{ Session::get('error') }}</span>
-                    <button type="button" class="btn-close text-lg py-3 opacity-10" data-bs-dismiss="alert"
-                        aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                @endif
-               
-               
-                <div class="d-flex flex-row justify-content-between mx-4">
-                    <div class="d-flex mt-3">
-                        <p class="text-secondary pt-2">Show&nbsp;&nbsp;</p>
-                        <select wire:model="perPage" class="form-control mb-2" id="entries">
-                            <option value="10">10</option>
-                            <option selected value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                        <p class="text-secondary pt-2">&nbsp;&nbsp;entries</p>
-                    </div>
+{{-- Page Title --}}
+@section('page_title')
+    @lang("components/user.page_title")
+@endsection
 
-                    <div class="d-flex mt-3">
-                        <p class="text-secondary pt-2">Status&nbsp;&nbsp;</p>
-                        <select wire:model="filter.status" class="form-control mb-2" id="status">
-                            <option value="">Any Status</option>
-                            <option value="1">Active</option>
-                            <option value="0">In Active</option>                           
-                        </select>
-                    </div>
+<x-core.container wire:init="init">
+
+    {{-- Alert message - alert-success, examples- alert-danger, alert-warning, alert-primary  --}}
+    <x-slot name="alert">
+        @if (session('status'))
+            <x-alert class="alert-success">{{ Session::get('status') }}</x-alert>
+        @endif
+    </x-slot>
+
+    {{-- Card --}}
+    <x-core.card class="custom-card">
+        <x-slot name="header">
+
+            {{-- Filter row with seachable --}}
+            <x-table.container-filter-row seachable />
+
+                <x-core.card-toolbar>
+                    {{-- Header Bulk actions  --}}
+                    <x-dropdown label="{{ __('components/user.Actions') }}">
+                        {{-- <x-dropdown.item wire:click="exportSelected">
+                            @lang('components/user.Export')
+                        </x-dropdown.item> --}}
+
+                        
+                        <x-dropdown.item wire:click="destroyMultiple()" class="dropdown-item text-danger">
+                            @lang('components/user.Delete')
+                        </x-dropdown.item>
+                    </x-dropdown>
+
+
+                     {{-- Filter Action  --}}
+                     <x-dropdown class="px-2 py-3 dropdown-md" label="{{ __('component.Filter') }}">
+                        <x-input.group inline for="filters.status" label="{{ __('components/user.Status') }}">
+                            <x-input.select wire:model="filters.status" placeholder="{{ __('components/user.Any Status') }}">
+                                <option value="1"> @lang('components/user.Active') </option>
+                                <option value="0"> @lang('components/user.Inactive') </option>
+                            </x-input.select>
+                        </x-input.group>
                     
-                    <div class="d-flex mt-3">
-                        <p class="text-secondary pt-2">Role&nbsp;&nbsp;</p>
-                        <select wire:model="filter.role" class="form-control mb-2" id="roles">
-                            <option value="">Any Role</option>
-                            @foreach ($roles as $role)
-                                <option value="{{ $role->name }}"> {{ $role->name }}</option>
-                            @endforeach                       
-                        </select>
-                    </div>
-                   
-                    <div class="mt-3 ">
-                        <input wire:model="search" type="text" class="form-control" placeholder="Search...">
-                    </div>
-                </div>
-                <x-table>
-
-                    <x-slot name="head">
-                        <x-table.heading sortable wire:click="sortBy('id')"
-                            :direction="$sortField === 'id' ? $sortDirection : null"> ID
-                        </x-table.heading>
-                        <x-table.heading> Photo
-                        </x-table.heading>
-                        <x-table.heading sortable wire:click="sortBy('name')"
-                            :direction="$sortField === 'name' ? $sortDirection : null"> Name
-                        </x-table.heading>
-                        <!-- <x-table.heading>Email
-                        </x-table.heading> -->
-                        <x-table.heading>Phone
-                        </x-table.heading>
-                        <x-table.heading>Status
-                        </x-table.heading>
-                        @if(!empty(Route::current()->parameter('role')) && Route::current()->parameter('role') == 'driver')
-                            <x-table.heading>Status
-                            </x-table.heading>
-                        @endif
-                       
-                        @if(empty($this->filter['role']))
-                            <x-table.heading>Role
-                            </x-table.heading>
-                        @endif
-                        <x-table.heading sortable wire:click="sortBy('created_at')"
-                            :direction="$sortField === 'created_at' ? $sortDirection : null">
-                            Creation Date
-                        </x-table.heading>
-                     
-                        <x-table.heading>Actions</x-table.heading>
+                        <x-input.group inline for="filter-date-min" label="{{ __('components/user.Role') }}">
+                            <x-input.select wire:model="filters.role" placeholder="{{ __('components/user.Any Role') }}">
+                                @foreach ($roles as $role)
+                                    <option value="{{ $role->name }}"> {{ $role->name }}</option>
+                                @endforeach
+                            </x-input.select>
+                        </x-input.group>
                     
-                    </x-slot>
+                        <x-button.link wire:click="resetFilters" class="mt-2"> @lang('component.Reset Filters') </x-button.link>
 
-                    <x-slot name="body">
-                        @foreach ($users as $user)
+                    </x-dropdown>
+
+                    @can('add-user')
+                        {{-- button with icon,href --}}
+                        <x-table.button.add icon href="{{ route('add-user', ['role' => $this->filters['role']]) }}" > @lang('components/user.Add User') </x-table.button.add>
+                    @endcan
+
+                </x-core.card-toolbar>
+        </x-slot>
+        <x-slot name="body">
+
+            {{--  Table with perPage and pagination --}}
+            <x-table perPage total="{{ $users->total() }}" id="users-list" paginate="{{ $users->links() }}">
+                <x-slot name="head">
+
+                    {{-- Select-all checkbox  --}}
+                    <x-table.heading-selected total="{{ $users->total() }}" />
+
+                    {{-- Dynamic columns heading --}}
+                    <x-table.heading columns />
+                    <x-table.heading> @lang('components/user.Actions')</x-table.heading>
+
+                </x-slot>
+                <x-slot name="body">
+                    {{-- Select records count (which rows checkbox checked) --}}
+                    <x-table.row-selected-count selectPage="{{ $selectPage }}" selectedAll="{{ $selectAll }}"
+                        count="{{ $users->count() }}" total="{{ $users->total() }}" />
+
+                        {{-- Table row --}}
+                        @forelse ($users as $user)
                         <x-table.row wire:key="row-{{ $user->id }}">
-                            <x-table.cell>{{ $user->id }}</x-table.cell>
-                            <x-table.cell class="position-relative">
-                                @if ($user->profile_photo)
-                                <img src="{{ Storage::disk(config('app_settings.filesystem_disk.value'))->url($user->profile_photo)}}" alt="picture"
-                                    class="avatar avatar-sm me-3">
-                                @else
-                                <img src="{{ asset('assets') }}/img/default-avatar.png" alt="avatar"
-                                    class="avatar avatar-sm me-3">
-                                @endif
-                            </x-table.cell>
-                            <x-table.cell><a href="{{ route('view-user', $user) }}">{{ $user->name }}</a></x-table.cell>                          
-                            <x-table.cell>+{{$user->country_code}} {{ substr($user->phone , +(strlen($user->country_code)))  }}</x-table.cell>
-                            <x-table.cell> 
-                            @if ($user->id != auth()->id() || $user->id  != 1)
-                                <div class="form-check form-switch ms-3">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault35"  wire:change="statusUpdate({{ $user->id }},{{ $user->status}})"
-                                        @if($user->status) checked="" @endif   @if($this->account_status == 'waiting') disabled @endif>
-                                </div>
-                            @endif
-                            </x-table.cell>
-                            @if(!empty($this->filter['role']) && $this->filter['role'] == 'driver')
-                            <x-table.cell>
-                                <span class="badge badge-dot me-4">
-                                   @if($user->driver && $user->driver->is_live)
-                                    <i class="bg-success"></i>
-                                    <span class="text-dark text-xs">Online</span>
-                                    @else
-                                    <i class="bg-danger"></i>
-                                    <span class="text-dark text-xs">Offline</span>
-                                    @endif
-                                </span>
-                            </x-table.cell>
-                            @endif
 
-                            @if(empty($this->filter['role']))
-                                <x-table.cell>{{ $user->getRoleNames()->implode(',') }}
-                                </x-table.cell>
-                            @endif
-                            <x-table.cell>{{ $user->created_at->format(config('app_settings.date_format.value')) }}</x-table.cell>
-                            <x-table.cell>                              
-                            
-                            @if($this->account_status == 'waiting')
-                                <button type="button" class="btn btn-success btn-link" data-original-title="Approve" title="Approve" 
-                                wire:click="applicationConfirm({{ $user->id }}, 'approved')">
-                                    <i class="material-icons">check</i>
-                                    <div class="ripple-container"></div>
-                                </button>
-                                <button type="button" class="btn btn-danger btn-link" data-original-title="Reject" title="Reject"
-                                wire:click="applicationConfirm({{ $user->id }}, 'rejected')">
-                                    <i class="material-icons">close</i>
-                                    <div class="ripple-container"></div>
-                                </button>
+                            {{-- Select checkbox --}}
+                            <x-table.cell-selected value="{{ $user->id }}" />
+                        
+                            <x-table.cell-avatar column="profile_photo" url="{{ $user->profile_photo }}"
+                                class="position-relative" />
+                        
+                            <x-table.cell column="name" href="">{{ $user->first_name }} {{ $user->last_name }}</x-table.cell>
+                            <x-table.cell column="email" href="">{{ $user->email }}</x-table.cell>
+                            @if(($user->phone) != null)
+                                <x-table.cell-phone column="phone" code="{{ $user->country_code }}" 
+                                    value="{{ $user->phone }}" /> 
                             @else
-                                <div class="dropdown dropup dropleft">
-                                    <button class="btn bg-gradient-default" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span class="material-icons">
-                                            more_vert
-                                        </span>
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
- 
-                                        @can('view-user')
-                                            <li><a class="dropdown-item"  data-original-title="view" title="view" href="{{ route('view-user', $user) }}">Edit</a></li>
-                                        @endcan
-                                        @if ($user->id != auth()->id() || $user->id  != 1)
-                                            <li><a class="dropdown-item text-danger"  data-original-title="Remove" title="Remove" wire:click="destroyConfirm({{ $user->id }})">Delete</a></li>
-                                        @endif 
-                                    </ul>
-                                </div>
-                            @endif    
-                            </x-table.cell>
+                                <x-table.cell column="phone">---</x-table.cell>
+                            @endif
+                            <x-table.cell column="role"> {{ $user->getRoleNames()->implode(',') }}</x-table.cell>
+
+                            <x-table.cell-switch column="status" status="{{ $user->status }}"
+                                wire:change="statusUpdate({{ $user->id }},{{ $user->status }})">
+                            </x-table.cell-switch>
+
+                            <x-table.cell-date column="created_at">{{ $user->created_at }}</x-table.cell-date>
+
+                            {{-- Action , examples- edit, view, delete  --}}
+                            <x-table.cell-dropdown>
+                                <x-table.dropdown-item class="dropdown-item" 
+                                    title="{{ __('components/user.Edit') }}" href="{{ route('view-user', $user) }}">
+                                    {{ __('components/user.Edit') }}
+                                </x-table.dropdown-item>
+                                <x-table.dropdown-item class="dropdown-item text-danger" 
+                                    title="{{ __('components/user.Delete') }}" wire:click="destroyConfirm({{ $user->id }})">
+                                    {{ __('components/user.Delete') }}
+                                </x-table.dropdown-item>
+                            </x-table.cell-dropdown>
                         </x-table.row>
-                        @endforeach
-                    </x-slot>
-                </x-table>
-                <div id="datatable-bottom">
-                    {{ $users->links() }}
-                </div>
-                
-                    @if($users->total() == 0)
-                        <div>
-                            <p class="text-center">No records found!</p>
-                        </div>
-                    @endif
-            </div>
-        </div>
-    </div>
-</div>
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
-@endpush
+                    @empty
+                        <x-table.no-record-found />
+                    @endforelse
+                </x-slot>
+            </x-table>
+        </x-slot>
+    </x-core.card>
+</x-core.container>

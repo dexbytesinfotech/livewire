@@ -1,6 +1,6 @@
 
     <main class="main-content  mt-0">
-      <div class="page-header align-items-start min-vh-90 m-3 border-radius-xl" style="background-image: url('https://images.unsplash.com/photo-1627850991511-fd5640f0b472?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1951&q=80');">
+      <div class="page-header align-items-start min-vh-90 m-3 border-radius-xl" style="background-image: url('{{ asset('assets') }}/../img/bg-home.jpg');">
         <div class="container my-auto">
           <div class="row">
             <div class="col-lg-4 col-md-7 mx-auto">

@@ -1,4 +1,4 @@
-<div class="container-fluid py-4">
+<div class="container-fluid py-4" wire:init="init">
     <div class="row mt-4">
         <div class="col-12">
             <div class="card">
@@ -51,6 +51,7 @@
                         <input wire:model="search" type="text" class="form-control" placeholder="Search...">
                     </div>
                 </div>
+                <x-loder ></x-loder>
                 <x-table>
 
                     <x-slot name="head">
@@ -96,19 +97,19 @@
                         @endforeach
                     </x-slot>
                 </x-table>
-                <div id="datatable-bottom">
-                    {{ $ticketCategories->links() }}
-                </div>
-                @if($ticketCategories->total() == 0)
-                    <div> 
-                        <p class="text-center">No records found!</p>
+                @if ( $ticketCategories)
+                    <div id="datatable-bottom">
+                        {{ $ticketCategories->links() }}
                     </div>
+                    @if($ticketCategories->total() == 0)
+                        <div> 
+                            <p class="text-center">No records found!</p>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
     </div>
 </div>
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
-@endpush
+ 
 

@@ -487,8 +487,7 @@
     </div>
 </div>
 <!--   Core JS Files   -->
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
+@push('js') 
 <script src="{{ asset('assets') }}/js/plugins/chartjs.min.js"></script>
 <script>
     var ctx1 = document.getElementById("chart-line").getContext("2d");

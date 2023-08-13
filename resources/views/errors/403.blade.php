@@ -1,18 +1,3 @@
-<!--
-=========================================================
-* Material Dashboard PRO - v3.0.1
-=========================================================
-
-* Product Page:  https://www.creative-tim.com/product/material-dashboard-pro 
-* Copyright 2021 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://www.creative-tim.com/license)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
--->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,7 +7,7 @@
   <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets') }}/img/apple-icon.png">
   <link rel="icon" type="image/png" href="{{ asset('assets') }}/img/favicon.png">
   <title>
-    Material Dashboard PRO by Creative Tim
+    {{ config('app_settings.app_name.value') ?? config('app.name')}} | Modern Outdoor Advertising on top of Wheels
   </title>
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />

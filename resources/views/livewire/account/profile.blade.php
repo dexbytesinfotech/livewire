@@ -1,3 +1,6 @@
+@section('page_title')
+  Profile
+@endsection
 <div class="container-fluid my-3 py-3">
     <div class="row mb-5">
         <div class="col-lg-12 mt-lg-0 mt-4">
@@ -22,12 +25,15 @@
                                 @endif
                                 <label for="file-input"
                                     class="btn btn-sm btn-icon-only bg-gradient-light position-absolute bottom-0 end-0 mb-n2 me-n2">
-                                    <i class="fa fa-pen top-0" data-bs-toggle="tooltip" data-bs-placement="top" title=""
+                                    <i   wire:loading.remove class="fa fa-pen top-0" data-bs-toggle="tooltip" data-bs-placement="top" title=""
                                         aria-hidden="true" data-bs-original-title="Edit Image"
                                         aria-label="Edit Image"></i><span class="sr-only">Edit Image</span>
+                                    <div wire:loading wire:target="profile_photo">
+                                        <x-spinner></x-spinner>
+                                    </div>
                                 </label>
                                
-                                <input wire:model='profile_photo' type="file" id="file-input">
+                                <input  wire:loading.attr="disabled"   wire:model='profile_photo' type="file" id="file-input">
                             </div>
                     </div>
                     <div class="col-sm-auto col-8 my-auto">
@@ -73,16 +79,26 @@
                 </div>
                 <div class="card-body pt-0">
                     <div class="row">
-                        <div class="col-6">
-
+                        <div class="col-3">
                             <div class="input-group input-group-static">
-                                <label>Name</label>
-                                <input wire:model.lazy="user.name" type="text" class="form-control" placeholder="Alec">
+                                <label>First Name</label>
+                                <input wire:model.lazy="user.first_name" type="text" class="form-control" placeholder="Alec">
                             </div>
-                            @error('user.name')
+                            @error('user.first_name')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
                         </div>
+
+                        <div class="col-3">
+                            <div class="input-group input-group-static">
+                                <label>Last Name</label>
+                                <input wire:model.lazy="user.last_name" type="text" class="form-control" placeholder="Deo">
+                            </div>
+                            @error('user.last_name')
+                            <p class='text-danger inputerror'>{{ $message }} </p>
+                            @enderror
+                        </div>
+
                         <div class="col-6">
 
                             <div class="input-group input-group-static">
@@ -111,8 +127,10 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6">
-                            <button type='submit' class="btn bg-gradient-dark btn-sm mt-6 mb-0">Save
-                                Changes</button>
+                            <button type='submit' class="btn bg-gradient-dark btn-sm mt-6 mb-0">
+                                <span wire:loading.remove wire:target="update"> Save Changes</span>
+                                        <span wire:loading wire:target="update"><x-buttonSpinner></x-buttonSpinner></span>
+                                    </button>
                         </div>
                     </div>
                     </form>
@@ -170,13 +188,13 @@
                             <input wire:model="confirmationPassword" type="password" class="form-control"
                                 placeholder="Confirm New Password">
                         </div>
-                        <button class="btn bg-gradient-dark btn-sm mt-6 mb-0">Update password</button>
+                        <button class="btn bg-gradient-dark btn-sm mt-6 mb-0">
+                            <span wire:loading.remove wire:target="passwordUpdate">  Update password</span>
+                            <span wire:loading wire:target="passwordUpdate"><x-buttonSpinner></x-buttonSpinner></span>
+                          </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-@push('js')
-<script src="{{ asset('assets') }}/js/plugins/perfect-scrollbar.min.js"></script>
-@endpush
