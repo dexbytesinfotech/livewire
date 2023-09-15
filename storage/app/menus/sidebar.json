@@ -122,7 +122,7 @@
           "permission" : "slider-management"
         },
        {
-          "name" : "Faq",
+          "name" : "FAQs",
           "icon" : "quiz",
           "key"  : "faq-management",
           "route" : "faq-management",
