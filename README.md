@@ -14,7 +14,7 @@
 1. Run git clone https://github.com/dexbytesinfotech/livewire.git livewire-admin-panel
 2. From the projects root run `cp .env.example .env`
 3. Configure your `.env` file 
-4. Use a same api (https://github.com/dexbytesinfotech/laravel-api) database for the project 
+4. Use a same api database (https://github.com/dexbytesinfotech/laravel-api) for the project 
 5. From the projects root folder run `composer update`
 6. From the projects root folder run `php artisan key:generate`
 7. From the projects root folder run `php artisan db:seed`
