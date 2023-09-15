@@ -1,18 +1,27 @@
-## Moadcar Backend
+## Livewire Admin Panel
 
 ## Lib
 - Laravel 9.x
-- Firebase
-- Twillo
+- Twillo (SMS)
+- Firebase (Push Notifications)
 
 # Installation
-1. From the projects root folder run `composer update`
-2. From the projects root folder run `php artisan key:generate`
-3. From the projects root folder run `php artisan db:seed`
-4. From the projects root folder run `composer dump-autoload`
-5. From the projects root folder run `php artisan storage:link`
-6. From the projects root folder run (local) `php artisan schedule:work` for server use supervisor
-7. From the projects root folder run (local) `php artisan schedule:work` for server use scheduling * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+
+## Step 1 
+1. Project https://github.com/dexbytesinfotech/laravel-api should be pre-installed in your server or machine
+
+## Step 2
+1. Run git clone https://github.com/dexbytesinfotech/livewire.git livewire-admin-panel
+2. From the projects root run `cp .env.example .env`
+3. Configure your `.env` file 
+4. Use a same api (https://github.com/dexbytesinfotech/laravel-api) database for the project 
+5. From the projects root folder run `composer update`
+6. From the projects root folder run `php artisan key:generate`
+7. From the projects root folder run `php artisan db:seed`
+8. From the projects root folder run `composer dump-autoload`
+9. From the projects root folder run `php artisan storage:link`
+10. From the projects root folder run (local) `php artisan schedule:work` for server use supervisor
+11. From the projects root folder run (local) `php artisan schedule:work` for server use scheduling * * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
 
 
 ### Folder Ownership and Permission
