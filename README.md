@@ -2,6 +2,7 @@
 
 ## Lib
 - Laravel 9.x
+- Livewire 2.x
 - Twillo (SMS)
 - Firebase (Push Notifications)
 
