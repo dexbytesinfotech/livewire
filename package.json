@@ -1,5 +1,11 @@
 {
+    "name": "livewire-dexbytes",
+    "version": "1.0.0",
+    "description": "Laravel Livewire Auth is a Complete Build of Laravel 9 with Admin and Store owner login with Admin User Roles and Permissions, User Profiles, and user, store, Faq, blogs management system.",
     "private": true,
+    "type": "module",
+    "author": "dexbytes infotech <support@dexbytes.com>",
+    "license": "ISC",
     "scripts": {
         "dev": "npm run development",
         "development": "mix",
