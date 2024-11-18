@@ -17,7 +17,7 @@ class Edit extends Component
 
     public User $user;
     public $roles;
-    public $role_id; 
+    public $role_id;
     public $countries = '';
 
     protected $listeners = [
@@ -30,7 +30,7 @@ class Edit extends Component
             'user.email' => 'email|unique:App\Models\User,email,'.$this->user->id,
             'user.first_name' =>'required|regex:/^[a-zA-Z ]+$/|min:3',
             'user.last_name' =>'required|regex:/^[a-zA-Z ]+$/|min:3',
-            'user.phone' =>'required|numeric|digits_between:8,10|unique:App\Models\User,phone,'.$this->user->id,            
+            'user.phone' =>'required|numeric|digits_between:8,10|unique:App\Models\User,phone,'.$this->user->id,
             'role_id' => 'required|exists:Spatie\Permission\Models\Role,name',
             'user.country_code' => 'required',
         ];
@@ -49,13 +49,13 @@ class Edit extends Component
 
         $this->validateOnly($propertyName);
 
-    } 
+    }
 
    public function update(){
-        
+
         $this->validate();
         if(!$this->user->hasRole($this->role_id)){
-            $this->user->syncRoles(explode(',', $this->role_id));     
+            $this->user->syncRoles(explode(',', $this->role_id));
         }
 
         $this->user->save();
@@ -64,17 +64,17 @@ class Edit extends Component
 
     public function hydrate()
     {
-        $this->emit('select2');
+        $this->dispach('select2');
     }
 
-    public function getRoleIdForInput($value){ 
+    public function getRoleIdForInput($value){
         $this->role_id = $value;
     }
 
     public function render()
-    {  
+    {
         return view('livewire.user-management.edit');
     }
 
-  
+
 }

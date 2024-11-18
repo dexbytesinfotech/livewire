@@ -52,7 +52,7 @@
         <button type="button" wire:click.prevent="resetField()" class="btn btn-secondary" wire:loading.attr="disabled"
             data-dismiss="modal">Close</button>
         <button type="button" wire:loading.attr="disabled" class="btn bg-gradient-dark submit" id="submitAgency"
-            @if (!$selected_agency_id) disabled @endif wire:click="$emit('agencySubmit')">Submit</button>
+            @if (!$selected_agency_id) disabled @endif wire:click="$dispach('agencySubmit')">Submit</button>
     </div>
 
 </div>

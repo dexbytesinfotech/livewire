@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\App;
 
@@ -16,10 +15,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-                
-        $this->call(CreatePermissionSeeder::class);  // Create all route permission 
+
+        $this->call(CreatePermissionSeeder::class);  // Create all route permission
         $this->call(CreateAdminPermissionsSeeder::class); // Assign all permission to admin
-        $this->call(CreateAgentPermissionsSeeder::class); // Assign all permission to Agent 
- 
+        $this->call(CreateAgentPermissionsSeeder::class); // Assign all permission to Agent
+
     }
 }

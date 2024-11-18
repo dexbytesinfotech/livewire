@@ -101,7 +101,7 @@
                                 @if ($device->agency == null)
                                     <x-table.dropdown-item class="dropdown-item"
                                         title="{{ __('components/device.Assign Agency') }}"
-                                        wire:click="$emit('openModal', 'devices.assign-agency', {{ json_encode(['deviceId' => $device->id]) }})">
+                                        wire:click="$dispach('openModal', 'devices.assign-agency', {{ json_encode(['deviceId' => $device->id]) }})">
                                         {{ __('components/device.Assign Agency') }}
                                     </x-table.dropdown-item>
                                 @else

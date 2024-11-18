@@ -22,14 +22,14 @@ class CreateManager extends ModalComponent
     public $passwordConfirmation = '';
     public $countries = '';
     public $country_code = '';
-    
+
     use AuthorizesRequests;
 
     public static function modalMaxWidth(): string
     {
         return 'xl';
     }
-    
+
     /**
      * List of add/edit form rules
      */
@@ -66,12 +66,12 @@ class CreateManager extends ModalComponent
     }
 
      /**
-      * store the agency manager data 
+      * store the agency manager data
       * @return void
       */
     public function store()
     {
-       
+
         $this->validate();
         $user = User::create([
             'first_name' => $this->first_name,
@@ -88,13 +88,13 @@ class CreateManager extends ModalComponent
         ]);
 
         $user->assignRole(Roles::AGENT);
-        $this->emit('updateShowManagers');
+        $this->dispach('updateShowManagers');
 
         $this->closeModal();
-        
-        $this->dispatchBrowserEvent('alert', 
-        ['type' => 'success',  'message' => __('components/agency.Agency Manager Created Successfully!')]);     
-        
+
+        $this->dispatchBrowserEvent('alert',
+        ['type' => 'success',  'message' => __('components/agency.Agency Manager Created Successfully!')]);
+
     }
 
     /**

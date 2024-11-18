@@ -21,8 +21,8 @@ class Edit extends Component
     public $deleteId;
     public $sliderId = '';
     protected $listeners = ['remove', 'confirm', 'refreshComponent' => '$refresh'];
-     
-    use AuthorizesRequests;  
+
+    use AuthorizesRequests;
     use WithFileUploads;
 
 
@@ -32,20 +32,20 @@ class Edit extends Component
             'slider.name' => 'required|string',
             'slider.description' => 'required|max:1000',
             'slider.status' => 'nullable|between:0,1',
-            'slider.is_default' => 'nullable|between:0,1',    
+            'slider.is_default' => 'nullable|between:0,1',
             'slider.start_date_time' => 'required',
             'slider.end_date_time' => 'required',
         ];
-         
+
     }
- 
+
     public function mount($id){
         //  Faq translate
         $this->lang = request()->ref_lang;
         $this->languages = request()->language;
-        
+
         $this->slider = Slider::find($id);
-      
+
         $this->slider->name = isset($this->slider->translate($this->lang)->name) ?  $this->slider->translate($this->lang)->name: $this->slider->translate(config('app.locale'))->name;
         $this->slider->description = isset($this->slider->translate($this->lang)->description) ? $this->slider->translate($this->lang)->description : $this->slider->translate(config('app.locale'))->description;
        //  Faq translate
@@ -56,7 +56,7 @@ class Edit extends Component
     public function updated($propertyName){
         $this->validateOnly($propertyName);
     }
- 
+
 
     public function edit() {
         $this->validate();
@@ -65,8 +65,8 @@ class Edit extends Component
         }
         $this->slider->update();
 
-        $this->dispatchBrowserEvent('alert', 
-        ['type' => 'success',  'message' => __('slider.Slider successfully updated.')]);  
+        $this->dispatchBrowserEvent('alert',
+        ['type' => 'success',  'message' => __('slider.Slider successfully updated.')]);
     }
 
     public function resetInputFields() {
@@ -85,48 +85,48 @@ class Edit extends Component
             return redirect()->back();
         }
 
-        
+
     }
- 
+
     public function storeImage(){
         $validatedData = $this->validate([
             'image' => 'required',
         ],
         [
             'image.required' => __('slider.The Image cannot be empty.'),
-            
+
         ]);
 
         $sliderImage = Image::make($this->image->getRealPath());
         $sliderImageName  = time() . '.' . $this->image->getClientOriginalExtension();
         Storage::disk(config('app_settings.filesystem_disk.value'))->put('sliders/original/'.$sliderImageName, (string) $sliderImage->encode());
-        
+
         $sliderImage->resize(728, null, function ($constraint) {
-            $constraint->aspectRatio();  
-            $constraint->upsize();               
+            $constraint->aspectRatio();
+            $constraint->upsize();
         });
 
         Storage::disk(config('app_settings.filesystem_disk.value'))->put('sliders/thumbnails'.'/'.$sliderImageName, $sliderImage->stream());
         $sliderImagePath = 'sliders/thumbnails'.'/'.$sliderImageName;
 
-        $validatedData['slider_id'] = $this->slider->id ; 
+        $validatedData['slider_id'] = $this->slider->id ;
         $validatedData['image'] = $sliderImagePath;
         $validatedData['status'] =  0;
-        SliderImage::create($validatedData);       
-      
+        SliderImage::create($validatedData);
+
         $this->image = '';
-        $this->emit('sliderImage');
+        $this->dispach('sliderImage');
 
         $this->slider = Slider::find($this->slider->id);
         $this->sliderImage = $this->slider->sliderImage;
 
-        $this->dispatchBrowserEvent('alert', 
+        $this->dispatchBrowserEvent('alert',
         ['type' => 'success',  'message' => __('slider.Slider Image successfully uploaded.')]);
-        
+
         $this->dispatchBrowserEvent('closeModal');
 
-        $this->emit('refreshComponent');
-       
+        $this->dispach('refreshComponent');
+
         //return redirect(request()->header('Referer'));
     }
 
@@ -141,13 +141,13 @@ class Edit extends Component
         $this->deleteId  = $sliderId;
         $this->dispatchBrowserEvent('swal:confirm', [
                 'action' => 'remove',
-                'type' => 'warning',  
+                'type' => 'warning',
                 'confirmButtonText' => __('slider.Yes, delete it!'),
                 'cancelButtonText' => __('slider.No, cancel!'),
-                'message' => __('slider.Are you sure?'), 
+                'message' => __('slider.Are you sure?'),
                 'text' => __('slider.If deleted, you will not be able to recover this Slider Image!')
             ]);
-           
+
     }
 
     /**
@@ -156,12 +156,12 @@ class Edit extends Component
      * @return response()
      */
     public function remove()
-    {       
-        SliderImage::find($this->deleteId)->delete();  
+    {
+        SliderImage::find($this->deleteId)->delete();
         $this->slider = Slider::find( $this->slider->id);
         $this->sliderImage = $this->slider->sliderImage;
-         
-        $this->dispatchBrowserEvent('alert', 
+
+        $this->dispatchBrowserEvent('alert',
         ['type' => 'success',  'message' => __('slider.Slider Image successfully deleted.')]);
     }
 
@@ -171,7 +171,7 @@ class Edit extends Component
      * @return response()
      */
     public function statusUpdate($sliderId, $status)
-    {     
+    {
         $status = ( $status == 1 ) ? 0 : 1;
         SliderImage::where('id', '=' , $sliderId )->update(['status' => $status]);
     }
@@ -189,9 +189,9 @@ class Edit extends Component
 
         $slider = Slider::findOrFail($this->slider->id);
         $slider->update($data);
-        $this->dispatchBrowserEvent('alert', 
+        $this->dispatchBrowserEvent('alert',
         ['type' => 'success',  'message' => 'Slider successfully updated.']);
-       
+
     }
 
 

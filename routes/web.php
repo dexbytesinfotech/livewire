@@ -1,8 +1,8 @@
 <?php
- 
+
 
 use Illuminate\Support\Facades\Route;
- 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -24,7 +24,7 @@ Route::group(['namespace' => 'App\Http\Livewire'], function()
     foreach (glob(__DIR__. '/web/*') as $router_files){
         (basename($router_files =='web.php')) ? : (require_once $router_files);
     }
- 
+
 });
 
- 
+
