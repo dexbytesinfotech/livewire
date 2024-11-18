@@ -54,7 +54,7 @@
                             <span class="text-sm">Bussiness Hours</span>
                         </a>
                     </li>
-                   
+
                 </ul>
             </div>
         </div>
@@ -68,14 +68,14 @@
                     <p class='text-danger'>{{ $message }} </p>
                     @enderror
                     <div class="col-sm-auto col-4">
-                          
+
                             <div class="avatar avatar-xl position-relative preview">
                                 @if($logo_path)
-                               
+
                                 <img src="{{ $logo_path->temporaryUrl() }}" class="w-100 rounded-circle shadow-sm"
                                     alt="Profile Photo">
                                 @elseif ($store->logo_path)
-                              
+
                                 <img src="{{ Storage::disk(config('app_settings.filesystem_disk.value'))->url($store->logo_path)}}" alt="avatar"
                                     class="w-100 rounded-circle shadow-sm">
                                 @else
@@ -131,7 +131,7 @@
                     </div>
                 </div>
             @endif
-      
+
         <!-- Card Basic Info -->
         <form wire:submit.prevent="update">
 
@@ -139,7 +139,7 @@
             <div class="card-header">
                 <h5>Basic Info</h5>
             </div>
-            <div class="card-body pt-0">               
+            <div class="card-body pt-0">
                     <div class="row">
                         <div class="col-12 mb-4">
                             <div class="input-group input-group-static">
@@ -150,7 +150,7 @@
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
                         </div>
-                        
+
                         <!-- <div class="col-4 mb-4">
                             <div class="input-group input-group-static">
                                 <label>Number Of Branch *</label>
@@ -175,7 +175,7 @@
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
                         </div>
-                                
+
                         <div class="col-4  mb-4">
                             <div class="input-group input-group-static">
                                 <label>Phone *</label>
@@ -184,7 +184,7 @@
                             @error('store.phone')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
-                        </div> 
+                        </div>
 
                         <div class="col-6  mb-4">
                             <div class="input-group input-group-static">
@@ -194,7 +194,7 @@
                             @error('store.email')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
-                        </div>                       
+                        </div>
 
                         <div class="col-12 mb-4">
                             <div class="input-group input-group-static">
@@ -205,7 +205,7 @@
                                             $dispatch('quill-text-change', quill.root.innerHTML);
                                             });"
                                         x-on:quill-text-change.debounce.200ms="@this.set('store.descriptions', $event.detail)">
-    
+
                                         {!! $store->descriptions !!}
                                     </div>
                                 </div>
@@ -213,19 +213,19 @@
                             @error('store.descriptions')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
-                        </div>  
- 
+                        </div>
+
                     </div>
-                   
+
             </div>
-        </div> 
+        </div>
 
        <!-- Food Order Preparing Time -->
        <div class="card mt-4" id="preparing-time">
             <div class="card-header">
                 <h5>Order Preparing Time</h5>
             </div>
-            <div class="card-body pt-0">                
+            <div class="card-body pt-0">
                 <div class="row">
                     <div class="col-12 mb-4">
                         <div class="input-group input-group-static">
@@ -235,10 +235,10 @@
                         @error('store.order_preparing_time')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                         @enderror
-                    </div>                    
+                    </div>
                 </div>
             </div>
-        </div> 
+        </div>
 
 
          <!-- Card Address Info -->
@@ -246,7 +246,7 @@
             <div class="card-header">
                 <h5>Store Address</h5>
             </div>
-            <div class="card-body pt-0">                 
+            <div class="card-body pt-0">
                     <div class="row">
                         <div class="col-12  mb-4">
                             <div  class="input-group input-group-static">
@@ -256,7 +256,7 @@
                             @error('storeAddress.address_line_1')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
-                        </div> 
+                        </div>
 
                         <div class="col-6 mb-4">
                             <div class="input-group input-group-static">
@@ -272,7 +272,7 @@
                                 <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
                         </div>
-                        
+
                         <div class="col-6 mb-4">
                             <div class="input-group input-group-static">
                                 <label> Zip Post Code *</label>
@@ -281,13 +281,13 @@
                             @error('storeAddress.zip_post_code')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
-                        </div> 
+                        </div>
 
                         <div class="col-4  mb-4">
                             <div class="input-group input-group-static">
 
                                 <label >Country *</label>
-                                <select class="form-control input-group input-group-dynamic"  wire:model.lazy="storeAddress.country" wire:change="$emit('updatedCountry')"  id="countryName" onfocus="focused(this)" onfocusout="defocused(this)">
+                                <select class="form-control input-group input-group-dynamic"  wire:model.lazy="storeAddress.country" wire:change="$dispach('updatedCountry')"  id="countryName" onfocus="focused(this)" onfocusout="defocused(this)">
                                     <option value = '' selected>Select Country</option>
                                     @foreach ($countries  as $countryValue)
                                         <option value="{{ $countryValue['id'] }},{{ $countryValue['name'] }}">{{ $countryValue['name']}}</option>
@@ -297,11 +297,11 @@
                             @error('storeAddress.country')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
-                        </div>       
+                        </div>
                         <div class="col-4  mb-4">
                             <div class="input-group input-group-static">
-                                <label>State *</label>  
-                                <select class="form-control input-group input-group-dynamic"  wire:loading.attr="disabled"  wire:model.lazy="storeAddress.state" wire:change="$emit('updatedState')" id="stateName" onfocus="focused(this)" onfocusout="defocused(this)">
+                                <label>State *</label>
+                                <select class="form-control input-group input-group-dynamic"  wire:loading.attr="disabled"  wire:model.lazy="storeAddress.state" wire:change="$dispach('updatedState')" id="stateName" onfocus="focused(this)" onfocusout="defocused(this)">
                                     <option value = ''selected>Select State</option>
                                     @foreach ($states  as $stateValue)
                                     <option value="{{ $stateValue['id'] }},{{ $stateValue['name'] }}">{{ $stateValue['name']}}</option>
@@ -311,9 +311,9 @@
                             @error('storeAddress.state')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
-                        </div>   
+                        </div>
 
-                        
+
                         <div class="col-4  mb-4">
                             <div class="input-group input-group-static">
                                 <label>City *</label>
@@ -327,10 +327,10 @@
                             @error('storeAddress.city')
                             <p class='text-danger inputerror'>{{ $message }} </p>
                             @enderror
-                        </div>    
+                        </div>
                     </div>
                 </div>
-        </div> 
+        </div>
 
         <div class="row">
             <div class="col-md-12">
@@ -354,28 +354,28 @@
                         <x-table.heading> ID
                         </x-table.heading>
                         <x-table.heading> Name
-                        </x-table.heading> 
+                        </x-table.heading>
                         <x-table.heading> Phone Number
                         </x-table.heading>
                        <x-table.heading>Status
-                        </x-table.heading>                      
+                        </x-table.heading>
                         <x-table.heading>
                             Creation Date
-                        </x-table.heading>                        
+                        </x-table.heading>
                     </x-slot>
 
                     <x-slot name="body">
                         @foreach ($accounts as $account)
                         <x-table.row wire:key="row-{{ $account->id }}">
                             <x-table.cell>{{ $account->user->id }}</x-table.cell>
-                            <x-table.cell>{{ $account->user->name }}</x-table.cell>     
+                            <x-table.cell>{{ $account->user->name }}</x-table.cell>
                             <x-table.cell>{{ $account->user->phone }}</x-table.cell>
-                            
+
                             <x-table.cell><div class="form-check form-switch ms-3">
                                 <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault35"  wire:change="statusAccountUpdate({{ $account->user->id }}, {{ $account->user->status}})"
                                     @if($account->user->status) checked="" @endif @if($account->user->id == auth()->user()->id) disabled @endif>
                             </div>
-                            </x-table.cell>                            
+                            </x-table.cell>
                             <x-table.cell>{{ $account->created_at }}</x-table.cell>
                         </x-table.row>
                         @endforeach
@@ -384,10 +384,10 @@
                 @if(empty($accounts))
                     <div>
                         <p class="text-center">{{ __('store.No account assign to store!') }}</p>
-                    </div> 
+                    </div>
                 @endif
             </div>
-        </div> 
+        </div>
 
 
 
@@ -402,26 +402,26 @@
                         <x-table.heading> Day
                         </x-table.heading>
                         <x-table.heading> Open
-                        </x-table.heading> 
+                        </x-table.heading>
                         <x-table.heading>Opening time
                         </x-table.heading>
                        <x-table.heading>Closing Time
-                        </x-table.heading> 
+                        </x-table.heading>
                     </x-slot>
 
                     <x-slot name="body">
                         @foreach ($bussinessHours as $mainKey => $bussiness)
                         <x-table.row>
                             <x-table.cell>{{ ucfirst($bussiness['days']) }}</x-table.cell>
-                            <x-table.cell> 
-                                <div class="form-group">                                    
+                            <x-table.cell>
+                                <div class="form-group">
                                     <div class="form-check">
                                         <input class="form-check-input" wire:model.lazy="bussinessHours.{{$mainKey}}.status"  type="checkbox">
                                      </div>
                                 </div>
-                            </x-table.cell>  
+                            </x-table.cell>
                             <x-table.cell class="text-center">
-                                <div class="input-group input-group-static mb-1 text-center"> 
+                                <div class="input-group input-group-static mb-1 text-center">
                                     <select  wire:model.lazy="bussinessHours.{{$mainKey}}.opening_time"  class="form-control" id="OpeningTime">
                                     @foreach ($timeOptionsList as $openingKey => $openingTime)
                                         <option value="{{$openingKey}}" class="text-center">{{$openingTime}}</option>
@@ -432,8 +432,8 @@
                                     @enderror
                                 </div>
                             </x-table.cell>
-                            <x-table.cell> 
-                                <div class="input-group input-group-static mb-1 text-center"> 
+                            <x-table.cell>
+                                <div class="input-group input-group-static mb-1 text-center">
                                     <select  wire:model.lazy="bussinessHours.{{$mainKey}}.closing_time"   class="form-control" id="OpeningTime">
                                         @foreach ($timeOptionsList as $closingKey => $closingTime)
                                             <option value="{{$closingKey}}" class="text-center" >{{$closingTime}}</option>
@@ -448,9 +448,9 @@
                         @endforeach
                     </x-slot>
                 </x-table>
-                
+
             </div>
-        </div> 
+        </div>
 
         </div>
     </div>

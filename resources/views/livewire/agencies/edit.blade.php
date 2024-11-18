@@ -158,7 +158,7 @@
                         </div>
                         <div class="col col-6 text-end">
                             <button type="button" class="btn bg-gradient-dark m-0 ms-2"
-                                wire:click="$emit('openModal', 'agencies.create-manager', {{ json_encode(['agencyId' => $agencyId]) }})">
+                                wire:click="$dispach('openModal', 'agencies.create-manager', {{ json_encode(['agencyId' => $agencyId]) }})">
                                 Add Manager
                             </button>
                         </div>
@@ -264,8 +264,8 @@
 </div>
 
 @push('js')
-    
-    <script> 
+
+    <script>
         function showHidePassword() {
             var x = document.getElementById("checkbox");
             var y = document.getElementById("repassword");
@@ -274,7 +274,7 @@
           } else {
             y.type = "password";
           }
-            
+
           }
-    </script>  
+    </script>
 @endpush
