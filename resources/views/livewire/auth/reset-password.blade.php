@@ -39,7 +39,7 @@
 
                                     <div class="input-group input-group-outline mt-3 @if(strlen($passwordConfirmation ?? '') > 0) is-filled @endif">
                                         <label class="form-label">Confirm Password</label>
-                                        <input wire:model="passwordConfirmation" type="password" class="form-control" 
+                                        <input wire:model="passwordConfirmation" type="password" class="form-control"
                                             >
                                             @error('passwordConfirmation')
                                             <div class="text-danger inputerror">{{ $message }}</div>
@@ -53,7 +53,10 @@
                                         Don't have an account?
                                         <a href="{{ route('register') }}"
                                             class="text-primary text-gradient font-weight-bold">Sign
-                                            up</a>
+                                            up
+
+
+</a>
                                     </p>
                                 </form>
                             </div>
@@ -67,7 +70,7 @@
     <script src="{{ asset('assets') }}/js/plugins/jquery-3.6.0.min.js"></script>
     <script>
         $(function () {
-    
+
             var input = $(".input-group input");
             input.focusin(function () {
                 $(this).parent().addClass("focused is-focused");
@@ -77,6 +80,6 @@
                 $(this).parent().removeClass("focused is-focused");
             });
         });
-    
+
     </script>
     @endpush

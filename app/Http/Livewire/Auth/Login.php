@@ -29,21 +29,20 @@ class Login extends Component
         if (Auth::check())
         {
             return redirect()->intended('dashboard');
-
         }
     }
 
     public function store()
     {
         $attributes = $this->validate();
-       
+
 
         $user = User::with(['roles', 'store'])->where(function ($query) use($attributes)
         {
             $query->orwhere('email',$attributes['email']);
             $query->orwhere('phone',$attributes['email']);
         })->first();
-       
+
         if(!$user) {
             return back()->with('status',"Please provide correct phone or email.");
         }
@@ -80,16 +79,16 @@ class Login extends Component
             return back()->with('status', "Your provided credentials could not be verified.");
         }
 
-        session()->regenerate(); 
+        session()->regenerate();
 
         if($user->hasRole('Provider')) {
             session(['profile' => $user->toArray(), 'store' => $store->toArray(), 'store_name' => $store->name, 'store_id' => $user->store->store_id]);
         }
-     
+
         return redirect()->route('dashboard');
 
     }
- 
+
     protected function message($user)
     {
         $message = "";
@@ -119,9 +118,6 @@ class Login extends Component
             return ['phone'=> $attributes['email'], 'password'=> $attributes['password']];
           }else{
             return ['email'=> $attributes['email'], 'password'=> $attributes['password']];
-          }          
+          }
     }
-
-
-
 }

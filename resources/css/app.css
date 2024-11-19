@@ -1,3 +1,13 @@
+@import './css/nucleo-icons.css';
+@import './css/nucleo-svg.css';
+@import './css/material-dashboard.css';
+@import './css/quill.snow.css';
+@import './css/toastr.min.css';
+@import './css/select2.min.css';
+@import './css/fonts.css';
+@import './css/custom.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
